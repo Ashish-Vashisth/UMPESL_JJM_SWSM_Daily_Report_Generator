@@ -19,6 +19,7 @@ BACKGROUND_B64 = """/9j/4AAQSkZJRgABAQEAyADIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQE
 
 
 
+
 def apply_branding(bg_overlay_opacity: float = 0.50):
     st.markdown(
         f"""
@@ -44,18 +45,17 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             border-radius: 14px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            overflow: visible !important;  /* prevents clipping of inner widgets */
+            overflow: visible !important;
         }}
 
         /* -----------------------------
            2) Text readability
-           (Do NOT force all div/span white; it breaks some widget internals)
+           (Avoid forcing all div/span white - breaks widget internals)
         ------------------------------*/
         h1, h2, h3, h4, h5, h6, p, label {{
             color: #F5F6F7 !important;
         }}
 
-        /* Common Streamlit text containers */
         .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
             color: #F5F6F7 !important;
         }}
@@ -75,8 +75,9 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
 
         /* -----------------------------
            4) File uploader
-           - Browse button always visible
-           - Uploaded filename row fully visible (no clipping)
+           - Browse button visible
+           - Uploaded filename row fully visible
+           - Cross (X) visible
         ------------------------------*/
 
         /* Give uploader some breathing room below */
@@ -97,7 +98,7 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             border-radius: 12px !important;
             border: 1px solid rgba(255,255,255,0.30) !important;
             padding: 10px !important;
-            padding-bottom: 18px !important; /* key space for uploaded-file row */
+            padding-bottom: 18px !important;  /* space for uploaded-file row */
         }}
 
         /* Uploader text */
@@ -120,7 +121,7 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             color: #111111 !important;
         }}
         [data-testid="stFileUploader"] button * {{
-            color: #111111 !important; /* keep label visible */
+            color: #111111 !important;
         }}
 
         /* Uploaded file row (newer Streamlit) */
@@ -133,7 +134,11 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
             overflow: visible !important;
         }}
-        [data-testid="stFileUploaderFile"] * {{
+
+        /* Make only non-button text bright inside file row */
+        [data-testid="stFileUploaderFile"] span,
+        [data-testid="stFileUploaderFile"] p,
+        [data-testid="stFileUploaderFile"] small {{
             color: #F8FAFC !important;
             font-weight: 600 !important;
         }}
@@ -143,9 +148,14 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             background: rgba(255,255,255,0.92) !important;
             border-radius: 10px !important;
             border: 1px solid rgba(0,0,0,0.12) !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.20) !important;
         }}
-        [data-testid="stFileUploaderFile"] button * {{
-            color: #111 !important;
+
+        /* Ensure the X icon is visible (often SVG: needs fill/stroke) */
+        [data-testid="stFileUploaderFile"] button svg,
+        [data-testid="stFileUploaderFile"] button svg * {{
+            fill: #111 !important;
+            stroke: #111 !important;
         }}
 
         /* Fallback for Streamlit DOMs where uploaded file is rendered as LI */
@@ -161,9 +171,21 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             margin-top: 10px !important;
             box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
         }}
-        [data-testid="stFileUploader"] li * {{
+        [data-testid="stFileUploader"] li span,
+        [data-testid="stFileUploader"] li p,
+        [data-testid="stFileUploader"] li small {{
             color: #F8FAFC !important;
             font-weight: 600 !important;
+        }}
+        [data-testid="stFileUploader"] li button {{
+            background: rgba(255,255,255,0.92) !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(0,0,0,0.12) !important;
+        }}
+        [data-testid="stFileUploader"] li button svg,
+        [data-testid="stFileUploader"] li button svg * {{
+            fill: #111 !important;
+            stroke: #111 !important;
         }}
 
         /* -----------------------------
@@ -184,11 +206,10 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
 
         /* -----------------------------
            6) Buttons
-           Keep Generate Report exactly like the red style
+           Keep Generate Report as red style
         ------------------------------*/
-        /* Generate Report (st.button) */
         .stButton > button {{
-            background: #ff4b4b !important;   /* red */
+            background: #ff4b4b !important;
             color: #ffffff !important;
             font-weight: 800 !important;
             font-size: 1.08rem !important;
@@ -209,7 +230,7 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             color: #ffffff !important;
         }}
 
-        /* Download button (st.download_button) */
+        /* Download button */
         .stDownloadButton > button {{
             background: rgba(255,255,255,0.92) !important;
             color: #111 !important;
@@ -242,6 +263,7 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
         """,
         unsafe_allow_html=True
     )
+
 
 
 # ---------------------------
