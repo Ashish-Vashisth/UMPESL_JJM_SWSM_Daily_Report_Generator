@@ -110,6 +110,67 @@ def apply_branding(bg_overlay_opacity: float = 0.50):
             color: #111111 !important;
         }}
 
+        
+/* ================================
+   4B) FIX: Uploaded file row clipping
+   ================================ */
+
+/* Give the whole uploader some breathing space */
+.stFileUploader {
+    margin-bottom: 1.2rem !important;
+}
+
+/* Ensure uploader wrappers don't clip children */
+[data-testid="stFileUploader"],
+[data-testid="stFileUploader"] > div,
+[data-testid="stFileUploader"] section {
+    overflow: visible !important;
+}
+
+/* Add bottom padding so the uploaded file row is fully visible */
+[data-testid="stFileUploader"] section {
+    padding-bottom: 18px !important;
+}
+
+/* Style the uploaded file row (filename chip/row) */
+[data-testid="stFileUploaderFile"] {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    margin-top: 10px !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
+}
+
+/* File row text */
+[data-testid="stFileUploaderFile"] * {
+    color: #F8FAFC !important;
+    font-weight: 600 !important;
+}
+
+/* Remove (X) button visibility improvement */
+[data-testid="stFileUploaderFile"] button {
+    background: rgba(255,255,255,0.92) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
+}
+[data-testid="stFileUploaderFile"] button * {
+    color: #111 !important;
+}
+
+/* Fallback for older/newer Streamlit DOM where file row is LI */
+[data-testid="stFileUploader"] ul,
+[data-testid="stFileUploader"] li {
+    overflow: visible !important;
+}
+[data-testid="stFileUploader"] li {
+    background: rgba(255,255,255,0.14) !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    margin-top: 10px !important;
+}
+
+
         /* -----------------------------
            5) Alerts: Uploaded / Created strips fully visible + readable
         ------------------------------*/
