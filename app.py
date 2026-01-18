@@ -196,9 +196,6 @@ def apply_branding(
 
 
 
-
-
-
 # ---------------------------
 # Reading the uploaded file
 # ---------------------------
