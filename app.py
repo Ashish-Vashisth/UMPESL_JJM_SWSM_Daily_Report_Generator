@@ -21,12 +21,12 @@ BACKGROUND_B64 = """/9j/4AAQSkZJRgABAQEAyADIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQE
 
 
 def apply_branding(
-    bg_overlay_opacity: float = 0.55,   # increase for more contrast (0.45–0.70 is typical)
+    bg_overlay_opacity: float = 0.48,  # slightly lighter overlay for readability
 ):
     st.markdown(
         f"""
         <style>
-        /* 1) Background with stronger dark overlay */
+        /* ===== Background + container ===== */
         [data-testid="stAppViewContainer"] {{
             background-image:
                 linear-gradient(rgba(0,0,0,{bg_overlay_opacity}), rgba(0,0,0,{bg_overlay_opacity})),
@@ -37,30 +37,29 @@ def apply_branding(
             background-attachment: fixed;
         }}
 
-        /* 2) Glass effect card behind the main content to improve readability */
+        /* Glass card for main body */
         [data-testid="stAppViewContainer"] .block-container {{
             padding-top: 2.2rem;
-            background: rgba(0, 0, 0, 0.28);
+            background: rgba(0, 0, 0, 0.30);
             border-radius: 14px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
         }}
 
-        /* 3) Force text/labels to be readable */
+        /* ===== Global text colors for readability ===== */
         h1, h2, h3, h4, h5, h6, p, span, label, div {{
             color: #F5F6F7 !important;
         }}
 
-        /* 4) Make inputs readable (white-ish backgrounds) */
+        /* Inputs: keep light backgrounds with dark text */
         input, textarea, select {{
-            background-color: rgba(255,255,255,0.92) !important;
+            background-color: rgba(255,255,255,0.95) !important;
             color: #111 !important;
             border-radius: 10px !important;
         }}
 
-        /* Streamlit widgets */
         [data-testid="stNumberInput"] input {{
-            background-color: rgba(255,255,255,0.92) !important;
+            background-color: rgba(255,255,255,0.95) !important;
             color: #111 !important;
         }}
 
@@ -70,17 +69,131 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.25) !important;
         }}
 
-        /* Buttons */
-        button {{
-            background: rgba(255,255,255,0.92) !important;
-            color: #111 !important;
+        /* ===== Buttons: Clear, high-contrast, accessible ===== */
+        /* Streamlit uses multiple button wrappers. We target both stButton and stDownloadButton. */
+        .stButton>button,
+        .stDownloadButton>button,
+        [data-testid="baseButton-primary"],
+        [data-testid="baseButton-secondary"] {{
             border-radius: 10px !important;
             border: 1px solid rgba(0,0,0,0.08) !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
+            padding: 0.6rem 1.1rem !important;
+        }}
+
+        /* Primary action button (e.g., "Generate Report") */
+        /* Use a strong brand green; adjust if you prefer a different brand color. */
+        .stButton>button,
+        [data-testid="baseButton-primary"] {{
+            background: #16a34a !important;      /* green-600 */
+            color: #ffffff !important;
+        }}
+        .stButton>button:hover,
+        [data-testid="baseButton-primary"]:hover {{
+            background: #15803d !important;      /* green-700 */
+            color: #ffffff !important;
+        }}
+        .stButton>button:focus,
+        [data-testid="baseButton-primary"]:focus {{
+            outline: 2px solid #86efac !important;  /* green-200 */
+            outline-offset: 2px !important;
+        }}
+        .stButton>button:active,
+        [data-testid="baseButton-primary"]:active {{
+            background: #166534 !important;      /* green-800 */
+            transform: translateY(1px);
+        }}
+
+        /* Secondary button style (download etc.) */
+        .stDownloadButton>button,
+        [data-testid="baseButton-secondary"] {{
+            background: #334155 !important;      /* slate-700 */
+            color: #ffffff !important;
+        }}
+        .stDownloadButton>button:hover,
+        [data-testid="baseButton-secondary"]:hover {{
+            background: #1f2937 !important;      /* gray-800 */
+            color: #ffffff !important;
+        }}
+        .stDownloadButton>button:focus,
+        [data-testid="baseButton-secondary"]:focus {{
+            outline: 2px solid #93c5fd !important;  /* blue-300 */
+            outline-offset: 2px !important;
+        }}
+        .stDownloadButton>button:active,
+        [data-testid="baseButton-secondary"]:active {{
+            background: #0f172a !important;      /* slate-900 */
+            transform: translateY(1px);
+        }}
+
+        /* Disabled state: keep readable, with clear contrast but lower opacity */
+        .stButton>button:disabled,
+        .stDownloadButton>button:disabled,
+        [data-testid="baseButton-primary"][disabled],
+        [data-testid="baseButton-secondary"][disabled] {{
+            background: #64748b !important;   /* slate-500 */
+            color: #f1f5f9 !important;        /* slate-100 */
+            opacity: 0.85 !important;
+            cursor: not-allowed !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            box-shadow: none !important;
+        }}
+
+        /* Make button text slightly larger to stand out */
+        .stButton>button, .stDownloadButton>button {{
+            font-size: 0.98rem !important;
+            letter-spacing: 0.2px;
+        }}
+
+        /* ===== Alerts / Messages better contrast ===== */
+        .stAlert {{
+            border-radius: 12px !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+        }}
+        .stAlert p, .stAlert div {{
+            color: #0b1220 !important;
+        }}
+        /* Streamlit uses bg color per type; boost contrast further */
+        .stAlert[data-baseweb="notification"] {{
+            backdrop-filter: blur(3px);
+        }}
+
+        /* ===== Metrics: large and bright ===== */
+        [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {{
+            color: #ffffff !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+        }}
+
+        /* ===== Expanders: headers with solid pill and brighter text ===== */
+        details summary {{
+            background: rgba(15, 23, 42, 0.65); /* slate-900 @ 65% */
+            border-radius: 10px !important;
+            padding: 0.6rem 0.8rem !important;
+            border: 1px solid rgba(255,255,255,0.20) !important;
+            color: #f8fafc !important;
+        }}
+        details[open] summary {{
+            background: rgba(30, 41, 59, 0.75); /* slate-800 */
+        }}
+
+        /* ===== Tables: header visibility ===== */
+        .stDataFrame thead th {{
+            background: #0f172a !important;  /* slate-900 */
+            color: #f8fafc !important;
+        }}
+
+        /* ===== Layout spacing for breathability ===== */
+        .stButton, .stDownloadButton {{
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.6rem !important;
         }}
         </style>
         """,
         unsafe_allow_html=True
     )
+
 
 
 
