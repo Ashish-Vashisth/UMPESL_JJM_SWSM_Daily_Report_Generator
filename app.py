@@ -1113,7 +1113,7 @@ if uploaded is not None:
             "SUPPLIED < Threshold",
             "ZERO / INACTIVE",
             "ABNORMAL SITES",
-            "Critical Sites"
+            "CRITICAL SITES"
             ])
 
             # -------------------------------------------------------
@@ -1200,7 +1200,7 @@ if uploaded is not None:
             # TAB 6 — CRITICAL SITES (REVISED)
             # -------------------------------------------------------
             with tab6:
-                st.subheader("🚨 Critical Sites (Based on 8 KPIs)")
+                st.subheader("🚨 Critical Sites")
 
                 # Build new critical DF
                 critical_df = build_critical_sites(abnormal_df)
@@ -1214,9 +1214,9 @@ if uploaded is not None:
 
                 c1, c2, c3, c4 = st.columns(4)
                 c1.metric("Total Critical Sites", total_crit)
-                c2.metric("HIGH Severity", high_cnt)
-                c3.metric("MEDIUM Severity", med_cnt)
-                c4.metric("LOW Severity", low_cnt)
+                c2.metric("High Severity", high_cnt)
+                c3.metric("Medium Severity", med_cnt)
+                c4.metric("Low Severity", low_cnt)
 
                 # Charts side-by-side
                 st.markdown("### 📊 Severity Distribution")
@@ -1227,7 +1227,7 @@ if uploaded is not None:
                         critical_summary,
                         "Severity",
                         "Count",
-                        "Critical Sites — Pie"
+                        "Critical Sites — % wise"
                     )
 
                 with colB:
