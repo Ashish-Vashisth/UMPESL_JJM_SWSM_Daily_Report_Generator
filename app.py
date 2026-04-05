@@ -1106,7 +1106,6 @@ if uploaded is not None:
             status_summary = build_site_status_summary(lpcd_df, less_df, zero_df, today_zero_df, abnormal_df, threshold)
             severity_summary = build_supply_severity_summary(less_df, threshold)
             abnormal_param_summary = build_abnormal_parameter_summary(abnormal_df)
-            critical_sites = build_top_critical_sites(less_df, abnormal_df)
 
             tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
             "Summary",
