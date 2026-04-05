@@ -685,9 +685,14 @@ def apply_formatting(xlsx_bytes: bytes) -> bytes:
             cell.fill = avg_fill
 
     # -----------------------------
-    # Other existing sheets
+    # FORMAT ALL EXISTING SHEETS
     # -----------------------------
-    for sheet in ["SUPPLIED WATER LESS THAN 75", "ZERO(INACTIVE SITES)", "TODAY ZERO SITES"]:
+    for sheet in [
+        "SUPPLIED WATER LESS THAN 75",
+        "ZERO(INACTIVE SITES)",
+        "TODAY ZERO SITES",
+        "CRITICAL SITES"   # NEW
+    ]:
         if sheet in wb.sheetnames:
             format_sheet(wb[sheet])
 
