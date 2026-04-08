@@ -53,8 +53,6 @@ def apply_branding(
            MAIN CONTENT CARD
            ========================= */
         [data-testid="stAppViewContainer"] .block-container {{
-            padding-top: 2.2rem;
-            padding-bottom: 2rem;
             background: rgba(0, 0, 0, {card_opacity});
             border-radius: 14px;
             backdrop-filter: blur(7px);
@@ -168,7 +166,6 @@ def apply_branding(
         [data-testid="stAlert"] {{
             border-radius: 12px !important;
             padding: 0.75rem 1rem !important;
-            margin: 0.6rem 0 !important;
             box-shadow: 0 8px 18px rgba(0,0,0,0.35) !important;
             border: 1px solid rgba(255,255,255,0.12) !important;
         }}
@@ -254,6 +251,10 @@ def apply_branding(
     visibility: visible !important;
     opacity: 1 !important;
 }}
+
+        /* Hide "Built with Streamlit" footer */
+        footer {{visibility: hidden;}}
+        #MainMenu {{visibility: hidden;}}
         </style>
         """,
         unsafe_allow_html=True
