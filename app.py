@@ -1,4 +1,5 @@
 
+import requests
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -15,6 +16,12 @@ PLOTLY_DARK_THEME = {
     "legend": {"font": {"color": "white", "size": 14}},
     "title": {"font": {"color": "white", "size": 18}},
 }
+DISTRICT_URLS = {
+    "AYODHYA": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=503&AgencyId=127&Header=Automation%20System%20Ayodhya%20(UNIVERSAL%20MEP)",
+    "SULTANPUR": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=505&AgencyId=127&Header=Automation%20System%20Sultanpur%20(UNIVERSAL%20MEP)",
+    "DEORIA": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=516&AgencyId=127&Header=Automation%20System%20Deoria%20(UNIVERSAL%20MEP)",
+}
+
 
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, Border, Side, PatternFill
@@ -283,6 +290,33 @@ def read_source(uploaded_file) -> pd.DataFrame:
         raise ValueError("Could not parse any tables from the uploaded file.")
     df = max(tables, key=lambda t: t.shape[0])
     return df
+def read_source_from_url(url: str) -> pd.DataFrame:
+    """
+    Read district dashboard table directly from JJM URL.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    resp = requests.get(url, headers=headers, timeout=60)
+    resp.raise_for_status()
+
+    html = resp.text
+    tables = pd.read_html(StringIO(html))
+
+    if not tables:
+        raise ValueError("Could not parse any tables from the district URL.")
+
+    # Prefer the large scheme table
+    candidates = [t for t in tables if t.shape[1] >= 20]
+    if candidates:
+        df = max(candidates, key=lambda t: t.shape[0] * t.shape[1])
+    else:
+        df = max(tables, key=lambda t: t.shape[0] * t.shape[1])
+
+    df = flatten_columns(df)
+    return df
+    
 
 
 def flatten_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -1135,13 +1169,60 @@ threshold = st.number_input(
 
 uploaded = st.file_uploader("Upload JJMUP file", type=["xls", "xlsx", "xlsm"])
 
+if "prefetched_df" not in st.session_state:
+    st.session_state["prefetched_df"] = None
+
+if "prefetched_source_name" not in st.session_state:
+    st.session_state["prefetched_source_name"] = None
+
+st.markdown("### Quick District Load")
+col_d1, col_d2, col_d3 = st.columns(3)
+
+if col_d1.button("AYODHYA"):
+    try:
+        st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["AYODHYA"])
+        st.session_state["prefetched_source_name"] = "AYODHYA"
+        st.success("AYODHYA data loaded successfully. Now click Generate Report.")
+    except Exception as e:
+        st.error("Could not load AYODHYA data from JJM portal.")
+        st.exception(e)
+
+if col_d2.button("SULTANPUR"):
+    try:
+        st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["SULTANPUR"])
+        st.session_state["prefetched_source_name"] = "SULTANPUR"
+        st.success("SULTANPUR data loaded successfully. Now click Generate Report.")
+    except Exception as e:
+        st.error("Could not load SULTANPUR data from JJM portal.")
+        st.exception(e)
+
+if col_d3.button("DEORIA"):
+    try:
+        st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["DEORIA"])
+        st.session_state["prefetched_source_name"] = "DEORIA"
+        st.success("DEORIA data loaded successfully. Now click Generate Report.")
+    except Exception as e:
+        st.error("Could not load DEORIA data from JJM portal.")
+        st.exception(e)
+
 if uploaded is not None:
     st.info(f"Uploaded: {uploaded.name}")
+elif st.session_state["prefetched_df"] is not None:
+    st.info(f"Selected district source: {st.session_state['prefetched_source_name']}")
+else:
+    st.warning("Please upload the JJMUP export file or click a district button to load data.")
 
-    if st.button("Generate Report", type="primary"):
-        try:
-            # Read source
+if st.button("Generate Report", type="primary"):
+    try:
+        # Read source
+        if uploaded is not None:
             df = read_source(uploaded)
+        elif st.session_state["prefetched_df"] is not None:
+            df = st.session_state["prefetched_df"].copy()
+        else:
+            st.warning("Please upload the JJMUP export file or click a district button first.")
+            st.stop()
+
 
             # Build sheets
             less_df, zero_df, today_zero_df = build_report(df, threshold=threshold)
@@ -1640,5 +1721,3 @@ if uploaded is not None:
             st.error("Error while generating report. Please check the uploaded file format/columns.")
             st.exception(e)
 
-else:
-    st.warning("Please upload the JJMUP export file to proceed.")
