@@ -826,33 +826,20 @@ def make_donut_chart(df_chart, names_col, values_col, title, colors=None, color_
 
 
 
-def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420, color_col=None, color_map=None):
+def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420):
     if df_chart.empty:
         st.info(f"No data available for {title}")
         return
 
-    if color_col is not None and color_map is not None:
-        fig = px.bar(
-            df_chart,
-            x=x_col,
-            y=y_col,
-            title=title,
-            text=y_col,
-            color=color_col,
-            color_discrete_map=color_map
-        )
-        fig.update_layout(showlegend=False)
-    else:
-        fig = px.bar(
-            df_chart,
-            x=x_col,
-            y=y_col,
-            title=title,
-            text=y_col
-        )
-        fig.update_traces(marker_color=color, textposition="outside")
+    fig = px.bar(
+        df_chart,
+        x=x_col,
+        y=y_col,
+        title=title,
+        text=y_col
+    )
 
-    fig.update_traces(textposition="outside")
+    fig.update_traces(marker_color=color, textposition="outside")
 
     fig.update_layout(
         **PLOTLY_DARK_THEME,
@@ -864,6 +851,7 @@ def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420, c
     fig.update_yaxes(tickfont=dict(color="white", size=11))
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
 def build_site_status_summary(lpcd_df, less_df, zero_df, today_zero_df, abnormal_df, threshold):
@@ -1242,14 +1230,43 @@ if uploaded is not None:
                     )
 
                 with col_status_2:
-                    make_bar_chart(
-                        status_summary,
-                        "Status",
-                        "Count",
-                        "Status Distribution — Bar",
-                        color_col="Status",
-                        color_map=status_color_map
-                    )
+                    if status_summary.empty:
+                        st.info("No data available for Status Distribution — Bar")
+                    else:
+                        status_bar_colors = [
+                            status_color_map.get(v, "#4F81BD")
+                            for v in status_summary["Status"]
+                        ]
+
+                        fig_status_bar = px.bar(
+                            status_summary,
+                            x="Status",
+                            y="Count",
+                            title="Status Distribution — Bar",
+                            text="Count"
+                        )
+
+                        fig_status_bar.update_traces(
+                            marker_color=status_bar_colors,
+                            textposition="outside"
+                        )
+
+                        fig_status_bar.update_layout(
+                            **PLOTLY_DARK_THEME,
+                            height=420,
+                            margin=dict(l=10, r=10, t=50, b=10)
+                        )
+
+                        fig_status_bar.update_xaxes(
+                            tickfont=dict(color="white", size=11),
+                            tickangle=-35
+                        )
+                        fig_status_bar.update_yaxes(
+                            tickfont=dict(color="white", size=11)
+                        )
+
+                        st.plotly_chart(fig_status_bar, use_container_width=True)
+
 
 
                 st.markdown("### ✅ Supply Severity")
