@@ -1443,6 +1443,17 @@ if uploaded is not None:
 
                 st.metric("Total Abnormal Sites", len(abnormal_df))
 
+                abnormal_param_color_map = {
+                    "Hydrostatic": "#66C2A5",
+                    "Chlorine": "#FC8D62",
+                    "Radar Level": "#8DA0CB",
+                    "Pressure": "#E78AC3",
+                    "Turbidity": "#A6D854",
+                    "Voltage": "#FFD166",
+                    "Weekly LPCD": "#E5C494",
+                    "Static Totalizer": "#B3B3E6"
+                }
+
                 col_ab_tab_1, col_ab_tab_2 = st.columns(2)
 
                 with col_ab_tab_1:
@@ -1450,19 +1461,50 @@ if uploaded is not None:
                         abnormal_param_summary,
                         "Parameter",
                         "Count",
-                        "Abnormal Parameter Breakdown"
+                        "Abnormal Parameter Breakdown",
+                        color_map=abnormal_param_color_map
                     )
 
                 with col_ab_tab_2:
-                    make_bar_chart(
-                        abnormal_param_summary,
-                        "Parameter",
-                        "Count",
-                        "Abnormal Parameter Breakdown — Bar",
-                        color="#FFD166"
-                    )
+                    if abnormal_param_summary.empty:
+                        st.info("No data available for Abnormal Parameter Breakdown — Bar")
+                    else:
+                        abnormal_bar_colors = [
+                            abnormal_param_color_map.get(v, "#4F81BD")
+                            for v in abnormal_param_summary["Parameter"]
+                        ]
+
+                        fig_abnormal_tab_bar = px.bar(
+                            abnormal_param_summary,
+                            x="Parameter",
+                            y="Count",
+                            title="Abnormal Parameter Breakdown — Bar",
+                            text="Count"
+                        )
+
+                        fig_abnormal_tab_bar.update_traces(
+                            marker_color=abnormal_bar_colors,
+                            textposition="outside"
+                        )
+
+                        fig_abnormal_tab_bar.update_layout(
+                            **PLOTLY_DARK_THEME,
+                            height=420,
+                            margin=dict(l=10, r=10, t=50, b=10)
+                        )
+
+                        fig_abnormal_tab_bar.update_xaxes(
+                            tickfont=dict(color="white", size=11),
+                            tickangle=-35
+                        )
+                        fig_abnormal_tab_bar.update_yaxes(
+                            tickfont=dict(color="white", size=11)
+                        )
+
+                        st.plotly_chart(fig_abnormal_tab_bar, use_container_width=True)
 
                 st.dataframe(abnormal_df, use_container_width=True)
+
 
 
             # -------------------------------------------------------
