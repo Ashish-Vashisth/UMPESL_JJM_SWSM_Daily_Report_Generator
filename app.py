@@ -896,11 +896,51 @@ def build_site_status_summary(lpcd_df, less_df, zero_df, today_zero_df, abnormal
     return status_summary
 
 
-def build_supply_severity_summary(less_df, threshold):
-    if less_df.empty or "Percentage" not in less_df.columns:
-        return pd.DataFrame(columns=["Severity", "Count"])
+def build_supply_severity_summary(df: pd.DataFrame, threshold: float):
+    """
+    Build supply severity summary using ALL valid schemes from source data,
+    so that 75%-100% sites are also included in the dashboard.
+    """
+    df = flatten_columns(df)
+    norm = normalize_columns(df)
 
-    df_temp = less_df.copy()
+    scheme_id_col = find_col_contains(norm, "schemeid")
+    scheme_name_col = find_col_contains(norm, "schemename")
+    daily_demand_col = find_col_contains(norm, "waterdemand", "meter3", "daily")
+
+    yest_prod_col = None
+    for c, cn in norm.items():
+        if ("oht" in cn) and ("watersupply" in cn) and ("meter3" in cn) and ("yesterday" in cn):
+            yest_prod_col = c
+            break
+    if yest_prod_col is None:
+        raise KeyError("Could not find 'OHT Water Supply (Meter3) Yesterday' column.")
+
+    work_df = df[[scheme_id_col, scheme_name_col, daily_demand_col, yest_prod_col]].copy()
+    work_df.columns = [
+        "Scheme Id",
+        "Scheme Name",
+        "Daily Water Demand (m^3)",
+        "Yesterday Water Production (m^3)",
+    ]
+
+    work_df["Daily Water Demand (m^3)"] = pd.to_numeric(work_df["Daily Water Demand (m^3)"], errors="coerce")
+    work_df["Yesterday Water Production (m^3)"] = pd.to_numeric(work_df["Yesterday Water Production (m^3)"], errors="coerce")
+
+    valid_scheme = (
+        work_df["Scheme Id"].notna()
+        & work_df["Scheme Name"].notna()
+        & (work_df["Scheme Id"].astype(str).str.strip().str.lower() != "none")
+        & (work_df["Scheme Name"].astype(str).str.strip().str.lower() != "none")
+        & (work_df["Scheme Id"].astype(str).str.strip() != "")
+        & (work_df["Scheme Name"].astype(str).str.strip() != "")
+    )
+
+    work_df = work_df.loc[valid_scheme].copy()
+
+    work_df["Percentage"] = (
+        work_df["Yesterday Water Production (m^3)"] / work_df["Daily Water Demand (m^3)"]
+    ) * 100
 
     def bucket(p):
         if pd.isna(p):
@@ -911,21 +951,23 @@ def build_supply_severity_summary(less_df, threshold):
             return "25–50%"
         elif p < threshold:
             return f"50–{threshold:g}%"
+        elif p <= 100:
+            return f"{threshold:g}–100%"
         else:
-            return f">={threshold:g}%"
+            return ">100%"
 
-    df_temp["Severity"] = df_temp["Percentage"].apply(bucket)
+    work_df["Severity"] = work_df["Percentage"].apply(bucket)
 
     summary = (
-        df_temp["Severity"]
+        work_df["Severity"]
         .value_counts()
         .rename_axis("Severity")
         .reset_index(name="Count")
     )
 
-    order = ["<25%", "25–50%", f"50–{threshold:g}%", f">={threshold:g}%", "Unknown"]
+    order = ["<25%", "25–50%", f"50–{threshold:g}%", f"{threshold:g}–100%", ">100%", "Unknown"]
     summary["order"] = summary["Severity"].apply(lambda x: order.index(x) if x in order else 999)
-    summary = summary.sort_values("order").drop(columns="order")
+    summary = summary.sort_values("order").drop(columns="order").reset_index(drop=True)
 
     return summary
 
@@ -1026,20 +1068,48 @@ def build_critical_sites(abnormal_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_critical_summary(critical_df: pd.DataFrame) -> pd.DataFrame:
+def build_critical_summary(lpcd_df: pd.DataFrame, critical_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Creates summary for dashboard charts: HIGH/MEDIUM/LOW counts.
+    Creates severity summary for dashboard charts:
+    HIGH, MEDIUM, LOW from critical_df
+    + Normal from sites having zero abnormal KPIs.
     """
-    if critical_df.empty:
+    if lpcd_df.empty:
         return pd.DataFrame(columns=["Severity", "Count"])
 
-    return (
-        critical_df["Severity Score"]
-        .value_counts()
-        .rename_axis("Severity")
-        .reset_index(name="Count")
-        .sort_values("Severity", key=lambda s: s.map({"HIGH": 1, "MEDIUM": 2, "LOW": 3}))
+    base_df = lpcd_df[["Scheme Id", "Scheme Name"]].dropna().copy()
+    base_df["key"] = (
+        base_df["Scheme Id"].astype(str).str.strip() + " | " +
+        base_df["Scheme Name"].astype(str).str.strip()
     )
+    total_sites = base_df["key"].nunique()
+
+    if critical_df.empty:
+        summary = pd.DataFrame({
+            "Severity": ["HIGH", "MEDIUM", "LOW", "Normal"],
+            "Count": [0, 0, 0, total_sites]
+        })
+        return summary[summary["Count"] > 0].reset_index(drop=True)
+
+    critical_keys_df = critical_df[["Scheme Id", "Scheme Name"]].dropna().copy()
+    critical_keys_df["key"] = (
+        critical_keys_df["Scheme Id"].astype(str).str.strip() + " | " +
+        critical_keys_df["Scheme Name"].astype(str).str.strip()
+    )
+    critical_site_count = critical_keys_df["key"].nunique()
+
+    high_count = (critical_df["Severity Score"] == "HIGH").sum()
+    medium_count = (critical_df["Severity Score"] == "MEDIUM").sum()
+    low_count = (critical_df["Severity Score"] == "LOW").sum()
+    normal_count = max(total_sites - critical_site_count, 0)
+
+    summary = pd.DataFrame({
+        "Severity": ["HIGH", "MEDIUM", "LOW", "Normal"],
+        "Count": [high_count, medium_count, low_count, normal_count]
+    })
+
+    summary = summary[summary["Count"] > 0].reset_index(drop=True)
+    return summary
 
 # ---------------------------
 # Streamlit UI
@@ -1109,7 +1179,7 @@ if uploaded is not None:
 
             # Build summaries
             status_summary = build_site_status_summary(lpcd_df, less_df, zero_df, today_zero_df, abnormal_df, threshold)
-            severity_summary = build_supply_severity_summary(less_df, threshold)
+            severity_summary = build_supply_severity_summary(df, threshold)
             abnormal_param_summary = build_abnormal_parameter_summary(abnormal_df)
 
             tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -1135,13 +1205,65 @@ if uploaded is not None:
                 c5.metric("Abnormal", len(abnormal_df))
 
                 st.markdown("### ✅ Site Status")
-                make_donut_chart(status_summary, "Status", "Count", "Status Distribution")
+                col_status_1, col_status_2 = st.columns(2)
+
+                with col_status_1:
+                    make_donut_chart(
+                        status_summary,
+                        "Status",
+                        "Count",
+                        "Status Distribution"
+                    )
+
+                with col_status_2:
+                    make_bar_chart(
+                        status_summary,
+                        "Status",
+                        "Count",
+                        "Status Distribution — Bar",
+                        color="#66C2A5"
+                    )
 
                 st.markdown("### ✅ Supply Severity")
-                make_donut_chart(severity_summary, "Severity", "Count", "Supply Severity Levels")
+                col_sup_1, col_sup_2 = st.columns(2)
+
+                with col_sup_1:
+                    make_donut_chart(
+                        severity_summary,
+                        "Severity",
+                        "Count",
+                        "Supply Severity Levels"
+                    )
+
+                with col_sup_2:
+                    make_bar_chart(
+                        severity_summary,
+                        "Severity",
+                        "Count",
+                        "Supply Severity Levels — Bar",
+                        color="#FF8C5A"
+                    )
 
                 st.markdown("### ✅ Abnormal Parameters")
-                make_donut_chart(abnormal_param_summary, "Parameter", "Count", "Abnormal Parameter Count")
+                col_abn_1, col_abn_2 = st.columns(2)
+
+                with col_abn_1:
+                    make_donut_chart(
+                        abnormal_param_summary,
+                        "Parameter",
+                        "Count",
+                        "Abnormal Parameter Count"
+                    )
+
+                with col_abn_2:
+                    make_bar_chart(
+                        abnormal_param_summary,
+                        "Parameter",
+                        "Count",
+                        "Abnormal Parameter Count — Bar",
+                        color="#FFD166"
+                    )
+
 
 
             # -------------------------------------------------------
@@ -1161,7 +1283,6 @@ if uploaded is not None:
                 lpcd_df.sort_values("Avg LPCD (Weekly)").head(10)[["Scheme Name", "Avg LPCD (Weekly)"]]
             )
                 make_bar_chart(top10_lpcd, "Scheme Name", "Avg LPCD (Weekly)", "Lowest LPCD (Weekly)", color="#00BFFF")
-
 
 
             # -------------------------------------------------------
@@ -1198,7 +1319,25 @@ if uploaded is not None:
 
                 st.metric("Total Abnormal Sites", len(abnormal_df))
 
-                make_donut_chart(abnormal_param_summary, "Parameter", "Count", "Abnormal Parameter Breakdown")
+                col_ab_tab_1, col_ab_tab_2 = st.columns(2)
+
+                with col_ab_tab_1:
+                    make_donut_chart(
+                        abnormal_param_summary,
+                        "Parameter",
+                        "Count",
+                        "Abnormal Parameter Breakdown"
+                    )
+
+                with col_ab_tab_2:
+                    make_bar_chart(
+                        abnormal_param_summary,
+                        "Parameter",
+                        "Count",
+                        "Abnormal Parameter Breakdown — Bar",
+                        color="#FFD166"
+                    )
+
                 st.dataframe(abnormal_df, use_container_width=True)
 
 
@@ -1206,25 +1345,41 @@ if uploaded is not None:
             # TAB 6 — CRITICAL SITES (REVISED)
             # -------------------------------------------------------
             with tab6:
-                st.subheader("🚨 Critical Sites")
+                st.subheader("🚨 Critical Sites (Based on 8 KPIs)")
 
-                # Build new critical DF
+                # Build critical data
                 critical_df = build_critical_sites(abnormal_df)
-                critical_summary = build_critical_summary(critical_df)
+                critical_summary = build_critical_summary(lpcd_df, critical_df)
 
-                # Metrics row
-                total_crit = len(critical_df)
+                total_critical = len(critical_df)
                 high_cnt = (critical_df["Severity Score"] == "HIGH").sum()
                 med_cnt = (critical_df["Severity Score"] == "MEDIUM").sum()
                 low_cnt = (critical_df["Severity Score"] == "LOW").sum()
 
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("Total Critical Sites", total_crit)
-                c2.metric("High Severity", high_cnt)
-                c3.metric("Medium Severity", med_cnt)
-                c4.metric("Low Severity", low_cnt)
+                base_sites_df = lpcd_df[["Scheme Id", "Scheme Name"]].dropna().copy()
+                base_sites_df["key"] = (
+                    base_sites_df["Scheme Id"].astype(str).str.strip() + " | " +
+                    base_sites_df["Scheme Name"].astype(str).str.strip()
+                )
+                total_sites = base_sites_df["key"].nunique()
 
-                # Charts side-by-side
+                if critical_df.empty:
+                    normal_cnt = total_sites
+                else:
+                    critical_keys_df = critical_df[["Scheme Id", "Scheme Name"]].dropna().copy()
+                    critical_keys_df["key"] = (
+                        critical_keys_df["Scheme Id"].astype(str).str.strip() + " | " +
+                        critical_keys_df["Scheme Name"].astype(str).str.strip()
+                    )
+                    normal_cnt = max(total_sites - critical_keys_df["key"].nunique(), 0)
+
+                c1, c2, c3, c4, c5 = st.columns(5)
+                c1.metric("Total Critical Sites", total_critical)
+                c2.metric("HIGH Severity", high_cnt)
+                c3.metric("MEDIUM Severity", med_cnt)
+                c4.metric("LOW Severity", low_cnt)
+                c5.metric("Normal", normal_cnt)
+
                 st.markdown("### 📊 Severity Distribution")
                 colA, colB = st.columns(2)
 
@@ -1245,9 +1400,11 @@ if uploaded is not None:
                         color="#FF4B4B"
                     )
 
-                # Table
                 st.markdown("### 📄 Detailed Critical Sites Table")
-                st.dataframe(critical_df, use_container_width=True)
+                if critical_df.empty:
+                    st.info("No critical issues found today ✅")
+                else:
+                    st.dataframe(critical_df, use_container_width=True)
 
             # Download
             st.download_button(
