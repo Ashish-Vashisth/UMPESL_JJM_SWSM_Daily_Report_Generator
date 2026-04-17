@@ -1720,4 +1720,7 @@ if st.button("Generate Report", type="primary"):
         except Exception as e:
             st.error("Error while generating report. Please check the uploaded file format/columns.")
             st.exception(e)
+        else:
+    st.warning("Please upload the JJMUP export file to proceed.")
+    
 
