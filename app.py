@@ -38,8 +38,8 @@ BACKGROUND_B64 = """/9j/4AAQSkZJRgABAQEAyADIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQE
 # ---------------------------
 
 def apply_branding(
-    bg_overlay_opacity: float = 0.28,   # lower = MORE background visibility
-    card_opacity: float = 0.42          # lower = card less dark (still readable)
+    bg_overlay_opacity: float = 0.28,
+    card_opacity: float = 0.42
 ):
     st.markdown(
         f"""
@@ -126,7 +126,7 @@ def apply_branding(
         }}
 
         /* =========================
-           UPLOADED FILE STRIP (LIGHTER + CLEARER)
+           UPLOADED FILE STRIP
            ========================= */
         [data-testid="stFileUploaderFile"],
         [data-testid="stFileUploader"] li {{
@@ -148,7 +148,7 @@ def apply_branding(
         }}
 
         /* =========================
-           STRIP CLOSE (X) BUTTON — CLEAN WHITE ROUND BUTTON
+           STRIP CLOSE (X) BUTTON
            ========================= */
         [data-testid="stFileUploaderFile"] button {{
             background: #ffffff !important;
@@ -162,7 +162,6 @@ def apply_branding(
         [data-testid="stFileUploaderFile"] button:hover {{
             background: #f1f5f9 !important;
         }}
-        /* Make the X icon dark */
         [data-testid="stFileUploaderFile"] button svg path,
         [data-testid="stFileUploaderFile"] button svg line,
         [data-testid="stFileUploaderFile"] button svg polyline {{
@@ -181,12 +180,7 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.12) !important;
         }}
 
-        /* =========================[kind="secondary"]:hover {
-            background: #1d4ed8 !important;
-            color: #ffffff !important;
-        }
-
-           /* =========================
+        /* =========================
            PRIMARY BUTTON (GENERATE REPORT) - RED
            ========================= */
         .stButton > button[kind="primary"] {{
@@ -204,7 +198,7 @@ def apply_branding(
         }}
 
         /* =========================
-           SECONDARY BUTTONS (DISTRICT BUTTONS)
+           SECONDARY BUTTONS (DISTRICT BUTTONS) - BLUE
            ========================= */
         .stButton > button[kind="secondary"] {{
             background: #2563eb !important;
@@ -221,10 +215,8 @@ def apply_branding(
             color: #ffffff !important;
         }}
 
-
-
         /* =========================
-           DOWNLOAD BUTTON — WHITE (TEXT + ICON ALWAYS VISIBLE)
+           DOWNLOAD BUTTON
            ========================= */
         .stDownloadButton > button {{
             background: #ffffff !important;
@@ -243,12 +235,9 @@ def apply_branding(
         .stDownloadButton > button svg polyline {{
             stroke: #111111 !important;
         }}
-
         .stDownloadButton > button:hover {{
             background: #f8fafc !important;
         }}
-
-        /* Disabled state (still readable) */
         .stDownloadButton > button:disabled {{
             opacity: 1 !important;
             background: rgba(255,255,255,0.85) !important;
@@ -282,15 +271,17 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.18) !important;
             color: #f8fafc !important;
         }}
-        /* FIX: Restore Streamlit dataframe toolbar visibility */
-[data-testid="stDataFrameToolbar"] {{
-    visibility: visible !important;
-    opacity: 1 !important;
-}}
+
+        /* Restore dataframe toolbar */
+        [data-testid="stDataFrameToolbar"] {{
+            visibility: visible !important;
+            opacity: 1 !important;
+        }}
         </style>
         """,
         unsafe_allow_html=True
     )
+
 
 
 # ---------------------------
