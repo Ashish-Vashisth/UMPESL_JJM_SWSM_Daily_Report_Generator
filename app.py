@@ -186,9 +186,10 @@ def apply_branding(
             color: #ffffff !important;
         }
 
+           /* =========================
            PRIMARY BUTTON (GENERATE REPORT) - RED
            ========================= */
-        .stButton > button[kind="primary"] {
+        .stButton > button[kind="primary"] {{
             background: #ff4b4b !important;
             color: #ffffff !important;
             font-weight: 900 !important;
@@ -197,15 +198,15 @@ def apply_branding(
             padding: 0.80rem 1.45rem !important;
             border: none !important;
             box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
-        }
-        .stButton > button[kind="primary"]:hover {
+        }}
+        .stButton > button[kind="primary"]:hover {{
             background: #e63d3d !important;
-        }
+        }}
 
         /* =========================
-           SECONDARY BUTTONS (DISTRICT BUTTONS) - BLUE
+           SECONDARY BUTTONS (DISTRICT BUTTONS)
            ========================= */
-        .stButton > button[kind="secondary"] {
+        .stButton > button[kind="secondary"] {{
             background: #2563eb !important;
             color: #ffffff !important;
             font-weight: 900 !important;
@@ -214,7 +215,12 @@ def apply_branding(
             padding: 0.80rem 1.45rem !important;
             border: none !important;
             box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
-        }
+        }}
+        .stButton > button[kind="secondary"]:hover {{
+            background: #1d4ed8 !important;
+            color: #ffffff !important;
+        }}
+
 
 
         /* =========================
