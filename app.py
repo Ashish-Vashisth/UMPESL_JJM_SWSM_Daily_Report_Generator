@@ -1475,10 +1475,27 @@ if uploaded is not None:
                 critical_df = build_critical_sites(abnormal_df)
                 critical_summary = build_critical_summary(lpcd_df, critical_df)
 
+                # Fixed order for charts
+                sev_order = ["HIGH", "MEDIUM", "LOW", "Normal"]
+                critical_color_map = {
+                    "HIGH": "#FF4B4B",
+                    "MEDIUM": "#F4A261",
+                    "LOW": "#8FAADC",
+                    "Normal": "#66C2A5"
+                }
+
+                if not critical_summary.empty:
+                    critical_summary["Severity"] = pd.Categorical(
+                        critical_summary["Severity"],
+                        categories=sev_order,
+                        ordered=True
+                    )
+                    critical_summary = critical_summary.sort_values("Severity").reset_index(drop=True)
+
                 total_critical = len(critical_df)
-                high_cnt = (critical_df["Severity Score"] == "HIGH").sum()
-                med_cnt = (critical_df["Severity Score"] == "MEDIUM").sum()
-                low_cnt = (critical_df["Severity Score"] == "LOW").sum()
+                high_cnt = int((critical_df["Severity Score"] == "HIGH").sum())
+                med_cnt = int((critical_df["Severity Score"] == "MEDIUM").sum())
+                low_cnt = int((critical_df["Severity Score"] == "LOW").sum())
 
                 base_sites_df = lpcd_df[["Scheme Id", "Scheme Name"]].dropna().copy()
                 base_sites_df["key"] = (
@@ -1508,13 +1525,6 @@ if uploaded is not None:
                 colA, colB = st.columns(2)
 
                 with colA:
-                    critical_color_map = {
-                        "HIGH": "#FF4B4B",
-                        "MEDIUM": "#F4A261",
-                        "LOW": "#8FAADC",
-                        "Normal": "#66C2A5"
-                    }
-
                     make_donut_chart(
                         critical_summary,
                         "Severity",
@@ -1527,13 +1537,6 @@ if uploaded is not None:
                     if critical_summary.empty:
                         st.info("No data available for Critical Sites — Bar")
                     else:
-                        critical_color_map = {
-                            "HIGH": "#FF4B4B",
-                            "MEDIUM": "#F4A261",
-                            "LOW": "#8FAADC",
-                            "Normal": "#66C2A5"
-                        }
-
                         critical_bar_colors = [
                             critical_color_map.get(v, "#4F81BD")
                             for v in critical_summary["Severity"]
@@ -1569,6 +1572,13 @@ if uploaded is not None:
                         )
 
                         st.plotly_chart(fig_critical_bar, use_container_width=True)
+
+                st.markdown("### 📄 Detailed Critical Sites Table")
+                if critical_df.empty:
+                    st.info("No critical issues found today ✅")
+                else:
+                    st.dataframe(critical_df, use_container_width=True)
+
 
                 st.markdown("### 📄 Detailed Critical Sites Table")
                 if critical_df.empty:
