@@ -1469,71 +1469,72 @@ if st.button("Generate Report", type="primary"):
                     st.plotly_chart(fig_abnormal_bar, use_container_width=True)
 
         # -------------------------------------------------------
-        # TAB 2 — LPCD STATUS
-        # -------------------------------------------------------
-        with tab2:
-            st.subheader("LPCD Status Overview")
+            # TAB 2 — LPCD STATUS
+            # -------------------------------------------------------
+            with tab2:
+                st.subheader("LPCD Status Overview")
 
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Avg Yesterday LPCD", safe_mean(lpcd_df["Avg LPCD (Yesterday)"]))
-            c2.metric("Avg Weekly LPCD", safe_mean(lpcd_df["Avg LPCD (Weekly)"]))
-            c3.metric("Avg Monthly LPCD", safe_mean(lpcd_df["Avg LPCD (Monthly)"]))
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Avg Yesterday LPCD", safe_mean(lpcd_df["Avg LPCD (Yesterday)"]))
+                c2.metric("Avg Weekly LPCD", safe_mean(lpcd_df["Avg LPCD (Weekly)"]))
+                c3.metric("Avg Monthly LPCD", safe_mean(lpcd_df["Avg LPCD (Monthly)"]))
 
-            st.markdown("### 🔽 Lowest LPCD Weekly (Top 10)")
+                # Top 10 Lowest LPCD Weekly
+                st.markdown("### 🔽 Lowest LPCD Weekly (Top 10)")
 
-            top10_lpcd = lpcd_df[["Scheme Name", "Avg LPCD (Weekly)"]].copy()
-            top10_lpcd["Avg LPCD (Weekly)"] = pd.to_numeric(
-                top10_lpcd["Avg LPCD (Weekly)"], errors="coerce"
-            )
-
-            top10_lpcd = (
-                top10_lpcd.dropna(subset=["Avg LPCD (Weekly)"])
-                .sort_values("Avg LPCD (Weekly)", ascending=True)
-                .head(10)
-                .sort_values("Avg LPCD (Weekly)", ascending=False)
-            )
-
-            if top10_lpcd.empty:
-                st.info("No data available for Lowest LPCD Weekly chart")
-            else:
-                max_val = top10_lpcd["Avg LPCD (Weekly)"].max()
-                x_upper = max(1, float(max_val) * 1.20)
-
-                fig_lpcd = px.bar(
-                    top10_lpcd,
-                    x="Avg LPCD (Weekly)",
-                    y="Scheme Name",
-                    orientation="h",
-                    text="Avg LPCD (Weekly)",
-                    title="Lowest LPCD (Weekly)"
+                top10_lpcd = lpcd_df[["Scheme Name", "Avg LPCD (Weekly)"]].copy()
+                top10_lpcd["Avg LPCD (Weekly)"] = pd.to_numeric(
+                    top10_lpcd["Avg LPCD (Weekly)"], errors="coerce"
                 )
 
-                fig_lpcd.update_traces(
-                    marker_color="#00BFFF",
-                    texttemplate="%{text:.2f}",
-                    textposition="outside",
-                    cliponaxis=False
+                top10_lpcd = (
+                    top10_lpcd.dropna(subset=["Avg LPCD (Weekly)"])
+                    .sort_values("Avg LPCD (Weekly)", ascending=True)
+                    .head(10)
                 )
 
-                fig_lpcd.update_layout(
-                    **PLOTLY_DARK_THEME,
-                    height=560,
-                    margin=dict(l=20, r=100, t=50, b=20)
-                )
+                if top10_lpcd.empty:
+                    st.info("No data available for Lowest LPCD Weekly chart")
+                else:
+                    max_val = top10_lpcd["Avg LPCD (Weekly)"].max()
+                    y_upper = max(1, float(max_val) * 1.18)
 
-                fig_lpcd.update_xaxes(
-                    title="Avg LPCD (Weekly)",
-                    range=[0, x_upper],
-                    tickfont=dict(color="white", size=11)
-                )
+                    fig_lpcd = px.bar(
+                        top10_lpcd,
+                        x="Scheme Name",
+                        y="Avg LPCD (Weekly)",
+                        text="Avg LPCD (Weekly)",
+                        title="Lowest LPCD (Weekly)"
+                    )
 
-                fig_lpcd.update_yaxes(
-                    title="Scheme Name",
-                    tickfont=dict(color="white", size=11),
-                    automargin=True
-                )
+                    fig_lpcd.update_traces(
+                        marker_color="#00BFFF",
+                        texttemplate="%{text:.2f}",
+                        textposition="outside",
+                        cliponaxis=False
+                    )
 
-                st.plotly_chart(fig_lpcd, use_container_width=True)
+                    fig_lpcd.update_layout(
+                        **PLOTLY_DARK_THEME,
+                        height=520,
+                        margin=dict(l=10, r=10, t=50, b=140)
+                    )
+
+                    fig_lpcd.update_xaxes(
+                        title="Scheme Name",
+                        tickfont=dict(color="white", size=10),
+                        tickangle=-35,
+                        automargin=True
+                    )
+
+                    fig_lpcd.update_yaxes(
+                        title="Avg LPCD (Weekly)",
+                        tickfont=dict(color="white", size=11),
+                        range=[0, y_upper]
+                    )
+
+                    st.plotly_chart(fig_lpcd, use_container_width=True)
+
 
         # -------------------------------------------------------
         # TAB 3 — SUPPLIED < THRESHOLD
