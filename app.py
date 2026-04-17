@@ -1,4 +1,3 @@
-Final working Code for adding BAR in Summary and Normal in Critical Site
 
 
 import plotly.express as px
