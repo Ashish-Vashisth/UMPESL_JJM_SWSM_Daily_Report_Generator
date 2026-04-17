@@ -1208,7 +1208,7 @@ if col_d3.button("DEORIA"):
 if uploaded is not None:
     st.info(f"Uploaded: {uploaded.name}")
 elif st.session_state["prefetched_df"] is not None:
-    st.info(f"Selected district source: {st.session_state['prefetched_source_name']}")
+    st.info(f"Selected District: {st.session_state['prefetched_source_name']}")
 else:
     st.warning("Please upload the JJMUP export file or click a district button to load data.")
 
