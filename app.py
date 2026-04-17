@@ -181,10 +181,14 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.12) !important;
         }}
 
-        /* =========================
-           GENERATE REPORT BUTTON (RED)
+        /* =========================[kind="secondary"]:hover {
+            background: #1d4ed8 !important;
+            color: #ffffff !important;
+        }
+
+           PRIMARY BUTTON (GENERATE REPORT) - RED
            ========================= */
-        .stButton > button {{
+        .stButton > button[kind="primary"] {
             background: #ff4b4b !important;
             color: #ffffff !important;
             font-weight: 900 !important;
@@ -193,10 +197,25 @@ def apply_branding(
             padding: 0.80rem 1.45rem !important;
             border: none !important;
             box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
-        }}
-        .stButton > button:hover {{
+        }
+        .stButton > button[kind="primary"]:hover {
             background: #e63d3d !important;
-        }}
+        }
+
+        /* =========================
+           SECONDARY BUTTONS (DISTRICT BUTTONS) - BLUE
+           ========================= */
+        .stButton > button[kind="secondary"] {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            font-size: 1.06rem !important;
+            border-radius: 14px !important;
+            padding: 0.80rem 1.45rem !important;
+            border: none !important;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
+        }
+
 
         /* =========================
            DOWNLOAD BUTTON — WHITE (TEXT + ICON ALWAYS VISIBLE)
@@ -1178,7 +1197,7 @@ if "prefetched_source_name" not in st.session_state:
 st.markdown("### Quick District Load")
 col_d1, col_d2, col_d3 = st.columns(3)
 
-if col_d1.button("AYODHYA"):
+if col_d1.button("AYODHYA", type="secondary"):
     try:
         st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["AYODHYA"])
         st.session_state["prefetched_source_name"] = "AYODHYA"
@@ -1187,7 +1206,7 @@ if col_d1.button("AYODHYA"):
         st.error("Could not load AYODHYA data from JJM portal.")
         st.exception(e)
 
-if col_d2.button("SULTANPUR"):
+if col_d2.button("SULTANPUR", type="secondary"):
     try:
         st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["SULTANPUR"])
         st.session_state["prefetched_source_name"] = "SULTANPUR"
@@ -1196,7 +1215,7 @@ if col_d2.button("SULTANPUR"):
         st.error("Could not load SULTANPUR data from JJM portal.")
         st.exception(e)
 
-if col_d3.button("DEORIA"):
+if col_d3.button("DEORIA", type="secondary"):
     try:
         st.session_state["prefetched_df"] = read_source_from_url(DISTRICT_URLS["DEORIA"])
         st.session_state["prefetched_source_name"] = "DEORIA"
