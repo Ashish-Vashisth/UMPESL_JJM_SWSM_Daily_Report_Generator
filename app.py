@@ -783,7 +783,7 @@ def safe_min(series):
     return 0 if s.empty else round(s.min(), 1)
 
 
-def make_donut_chart(df_chart, names_col, values_col, title, colors=None, height=360):
+def make_donut_chart(df_chart, names_col, values_col, title, colors=None, color_map=None, height=360):
     if df_chart.empty or df_chart[values_col].sum() == 0:
         st.info(f"No data available for {title}")
         return
@@ -794,6 +794,7 @@ def make_donut_chart(df_chart, names_col, values_col, title, colors=None, height
         values=values_col,
         hole=0.55,
         color=names_col,
+        color_discrete_map=color_map,
         color_discrete_sequence=colors or px.colors.qualitative.Set2
     )
 
@@ -811,9 +812,9 @@ def make_donut_chart(df_chart, names_col, values_col, title, colors=None, height
             yanchor="middle",
             y=0.5,
             xanchor="left",
-            x=1.05   # Always keep to the right
+            x=1.05
         ),
-        margin=dict(l=10, r=120, t=50, b=10),  # Add space for right legend
+        margin=dict(l=10, r=120, t=50, b=10),
         height=height,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
@@ -823,20 +824,33 @@ def make_donut_chart(df_chart, names_col, values_col, title, colors=None, height
     st.plotly_chart(fig, use_container_width=True)
 
 
-def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420):
+def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420, color_col=None, color_map=None):
     if df_chart.empty:
         st.info(f"No data available for {title}")
         return
 
-    fig = px.bar(
-        df_chart,
-        x=x_col,
-        y=y_col,
-        title=title,
-        text=y_col
-    )
+    if color_col is not None and color_map is not None:
+        fig = px.bar(
+            df_chart,
+            x=x_col,
+            y=y_col,
+            title=title,
+            text=y_col,
+            color=color_col,
+            color_discrete_map=color_map
+        )
+        fig.update_layout(showlegend=False)
+    else:
+        fig = px.bar(
+            df_chart,
+            x=x_col,
+            y=y_col,
+            title=title,
+            text=y_col
+        )
+        fig.update_traces(marker_color=color, textposition="outside")
 
-    fig.update_traces(marker_color=color, textposition="outside")
+    fig.update_traces(textposition="outside")
 
     fig.update_layout(
         **PLOTLY_DARK_THEME,
@@ -1224,24 +1238,24 @@ if uploaded is not None:
                         color="#66C2A5"
                     )
 
-                st.markdown("### ✅ Supply Severity")
-                col_sup_1, col_sup_2 = st.columns(2)
+                st.markdown("### ✅ Site Status")
+                col_status_1, col_status_2 = st.columns(2)
 
-                with col_sup_1:
+                with col_status_1:
                     make_donut_chart(
-                        severity_summary,
-                        "Severity",
+                        status_summary,
+                        "Status",
                         "Count",
-                        "Supply Severity Levels"
+                        "Status Distribution"
                     )
 
-                with col_sup_2:
+                with col_status_2:
                     make_bar_chart(
-                        severity_summary,
-                        "Severity",
+                        status_summary,
+                        "Status",
                         "Count",
-                        "Supply Severity Levels — Bar",
-                        color="#FF8C5A"
+                        "Status Distribution — Bar",
+                        color="#66C2A5"
                     )
 
                 st.markdown("### ✅ Abnormal Parameters")
