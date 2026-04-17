@@ -1044,10 +1044,10 @@ def build_critical_summary(critical_df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------
 # Streamlit UI
 # ---------------------------
-st.set_page_config(page_title="UNIVERSAL_MEP JJM SWSM Daily Report", layout="wide")
+st.set_page_config(page_title="UNIVERSAL MEP JJM SWSM Daily Report", layout="wide")
 apply_branding()
 
-st.title("UNIVERSAL_MEP JJM SWSM Daily Report Generator")
+st.title("UNIVERSAL MEP JJM SWSM Daily Report Generator")
 st.write("Upload JJMUP export (.xls/.xlsx) → Download the formatted report Excel.")
 
 threshold = st.number_input(
