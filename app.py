@@ -819,7 +819,7 @@ def create_output_excel(
         zero_df.to_excel(w, sheet_name="ZERO(INACTIVE SITES)", index=False)
         today_zero_df.to_excel(w, sheet_name="TODAY ZERO SITES", index=False)
         abnormal_df.to_excel(w, sheet_name="ABNORMAL SITES", index=False)
-        critical_df = build_critical_sites(abnormal_df)
+        critical_df = build_critical_sites(lpcd_df, abnormal_df)
         critical_df.to_excel(w, sheet_name="CRITICAL SITES", index=False)
 
     styled = apply_formatting(buffer.getvalue())
