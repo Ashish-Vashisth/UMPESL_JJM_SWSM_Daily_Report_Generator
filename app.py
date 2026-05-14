@@ -901,7 +901,76 @@ def make_bar_chart(df_chart, x_col, y_col, title, color="#4F81BD", height=420):
     fig.update_yaxes(tickfont=dict(color="white", size=11))
 
     st.plotly_chart(fig, use_container_width=True)
+    
+def make_shadcn_vertical_bar_chart(df_chart, x_col, y_col, title, color="#4FC3F7", height=520):
+    if df_chart.empty:
+        st.info(f"No data available for {title}")
+        return
 
+    fig = px.bar(
+        df_chart,
+        x=x_col,
+        y=y_col,
+        text=y_col,
+        title=title
+    )
+
+    fig.update_traces(
+        marker_color=color,
+        marker_line_color=color,
+        marker_line_width=1,
+        texttemplate="%{text:g}",
+        textposition="outside",
+        cliponaxis=False,
+        hovertemplate="<b>%{x}</b><br>Value: %{y}<extra></extra>"
+    )
+
+    max_val = pd.to_numeric(df_chart[y_col], errors="coerce").max()
+    y_upper = max(1, float(max_val) * 1.25)
+
+    fig.update_layout(
+        height=height,
+        paper_bgcolor="rgba(255,255,255,0.92)",
+        plot_bgcolor="rgba(255,255,255,0.88)",
+        title=dict(
+            text=title.upper(),
+            font=dict(color="#1F2937", size=15),
+            x=0.02,
+            xanchor="left"
+        ),
+        font=dict(color="#334155", size=12),
+        margin=dict(l=45, r=30, t=60, b=135),
+        bargap=0.25,
+        showlegend=False,
+        xaxis=dict(
+            title="",
+            tickfont=dict(color="#475569", size=10),
+            tickangle=-35,
+            showgrid=False,
+            zeroline=False,
+            automargin=True
+        ),
+        yaxis=dict(
+            title="",
+            tickfont=dict(color="#64748B", size=11),
+            showgrid=True,
+            gridcolor="rgba(148,163,184,0.22)",
+            griddash="dash",
+            zeroline=False,
+            range=[0, y_upper]
+        ),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+            font_color="#111827",
+            bordercolor="#CBD5E1"
+        )
+    )
+
+    fig.update_xaxes(showline=False)
+    fig.update_yaxes(showline=False)
+
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def build_site_status_summary(lpcd_df, less_df, zero_df, today_zero_df, abnormal_df, threshold):
@@ -1531,7 +1600,7 @@ if st.button("Generate Report", type="primary"):
 
                     st.plotly_chart(fig_abnormal_bar, use_container_width=True)
 
-        # -------------------------------------------------------
+            # -------------------------------------------------------
             # TAB 2 — LPCD STATUS
             # -------------------------------------------------------
             with tab2:
@@ -1542,7 +1611,6 @@ if st.button("Generate Report", type="primary"):
                 c2.metric("Avg Weekly LPCD", safe_mean(lpcd_df["Avg LPCD (Weekly)"]))
                 c3.metric("Avg Monthly LPCD", safe_mean(lpcd_df["Avg LPCD (Monthly)"]))
 
-                # Top 10 Lowest LPCD Weekly
                 st.markdown("### 🔽 Lowest LPCD Weekly (Top 10)")
 
                 top10_lpcd = lpcd_df[["Scheme Name", "Avg LPCD (Weekly)"]].copy()
@@ -1556,47 +1624,14 @@ if st.button("Generate Report", type="primary"):
                     .head(10)
                 )
 
-                if top10_lpcd.empty:
-                    st.info("No data available for Lowest LPCD Weekly chart")
-                else:
-                    max_val = top10_lpcd["Avg LPCD (Weekly)"].max()
-                    y_upper = max(1, float(max_val) * 1.18)
-
-                    fig_lpcd = px.bar(
-                        top10_lpcd,
-                        x="Scheme Name",
-                        y="Avg LPCD (Weekly)",
-                        text="Avg LPCD (Weekly)",
-                        title="Lowest LPCD (Weekly)"
-                    )
-
-                    fig_lpcd.update_traces(
-                        marker_color="#00BFFF",
-                        texttemplate="%{text:.2f}",
-                        textposition="outside",
-                        cliponaxis=False
-                    )
-
-                    fig_lpcd.update_layout(
-                        **PLOTLY_DARK_THEME,
-                        height=520,
-                        margin=dict(l=10, r=10, t=50, b=140)
-                    )
-
-                    fig_lpcd.update_xaxes(
-                        title="Scheme Name",
-                        tickfont=dict(color="white", size=10),
-                        tickangle=-35,
-                        automargin=True
-                    )
-
-                    fig_lpcd.update_yaxes(
-                        title="Avg LPCD (Weekly)",
-                        tickfont=dict(color="white", size=11),
-                        range=[0, y_upper]
-                    )
-
-                    st.plotly_chart(fig_lpcd, use_container_width=True)
+                make_shadcn_vertical_bar_chart(
+                    top10_lpcd,
+                    "Scheme Name",
+                    "Avg LPCD (Weekly)",
+                    "Lowest LPCD Weekly (Top 10)",
+                    color="#4FC3F7",
+                    height=520
+                )
 
 
         # -------------------------------------------------------
