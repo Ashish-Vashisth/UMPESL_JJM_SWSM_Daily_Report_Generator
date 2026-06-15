@@ -10,13 +10,44 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
-**get_plotly_theme() = {
+PLOTLY_DARK_THEME = {
     "paper_bgcolor": "rgba(0,0,0,0)",
     "plot_bgcolor": "rgba(0,0,0,0)",
     "font": {"color": "white", "size": 14},
     "legend": {"font": {"color": "white", "size": 14}},
     "title": {"font": {"color": "white", "size": 18}},
 }
+
+
+def get_plotly_theme():
+    if st.session_state.get("theme_mode", "dark") == "bright":
+        return {
+            "paper_bgcolor": "rgba(0,0,0,0)",
+            "plot_bgcolor": "rgba(0,0,0,0)",
+            "font": {"color": "#111827", "size": 14},
+            "legend": {"font": {"color": "#111827", "size": 14}},
+            "title": {"font": {"color": "#111827", "size": 18}},
+        }
+
+    return {
+        "paper_bgcolor": "rgba(0,0,0,0)",
+        "plot_bgcolor": "rgba(0,0,0,0)",
+        "font": {"color": "white", "size": 14},
+        "legend": {"font": {"color": "white", "size": 14}},
+        "title": {"font": {"color": "white", "size": 18}},
+    }
+
+
+def get_chart_text_color():
+    if st.session_state.get("theme_mode", "dark") == "bright":
+        return "#111827"
+    return "white"
+
+
+def get_chart_grid_color():
+    if st.session_state.get("theme_mode", "dark") == "bright":
+        return "rgba(17,24,39,0.16)"
+    return "rgba(255,255,255,0.18)"
 DISTRICT_URLS = {
     "AYODHYA": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=503&AgencyId=127&Header=Automation%20System%20Ayodhya%20(UNIVERSAL%20MEP)",
     "SULTANPUR": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=505&AgencyId=127&Header=Automation%20System%20Sultanpur%20(UNIVERSAL%20MEP)",
