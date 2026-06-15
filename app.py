@@ -332,8 +332,9 @@ def apply_branding(
 
 def apply_dark_bright_toggle():
     """
-    Adds only a Dark/Bright icon at the top-right corner.
-    No version pill is shown.
+    Adds only Dark/Bright icon at the extreme top-right corner.
+    The icon remains fixed while scrolling.
+    No v2.0 pill.
     """
 
     if "theme_mode" not in st.session_state:
@@ -342,48 +343,83 @@ def apply_dark_bright_toggle():
     st.markdown(
         """
         <style>
-        /* Fixed top-right theme toggle container */
-        .theme-toggle-fixed {
-            position: fixed;
-            top: 14px;
-            right: 18px;
-            z-index: 999999;
+        /* =====================================================
+           FIXED DARK / BRIGHT TOGGLE BUTTON - EXTREME TOP RIGHT
+           ===================================================== */
+
+        .st-key-dark_bright_toggle_btn {
+            position: fixed !important;
+            top: 8px !important;
+            right: 8px !important;
+            z-index: 9999999 !important;
+            width: 52px !important;
+            height: 46px !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        /* Style only the theme toggle button */
-        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"] {
-            width: 54px !important;
+        .st-key-dark_bright_toggle_btn button {
+            position: fixed !important;
+            top: 8px !important;
+            right: 8px !important;
+            z-index: 9999999 !important;
+            width: 52px !important;
             height: 46px !important;
             min-height: 46px !important;
             padding: 0 !important;
+            margin: 0 !important;
             border-radius: 14px !important;
-            background: rgba(255,255,255,0.92) !important;
+            background: rgba(255,255,255,0.96) !important;
             color: #111827 !important;
-            border: 1px solid rgba(15,23,42,0.14) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.20) !important;
-            font-size: 1.15rem !important;
+            border: 1px solid rgba(15,23,42,0.18) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.24) !important;
+            font-size: 1.18rem !important;
+            font-weight: 900 !important;
+            line-height: 1 !important;
         }
 
-        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"]:hover {
-            background: rgba(255,255,255,1) !important;
+        .st-key-dark_bright_toggle_btn button:hover {
+            background: #ffffff !important;
             color: #111827 !important;
-            border: 1px solid rgba(15,23,42,0.22) !important;
+            border: 1px solid rgba(15,23,42,0.30) !important;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
+        }
+
+        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"],
+        div[data-testid="stButton"] button[aria-label="Switch Dark / Bright mode"] {
+            position: fixed !important;
+            top: 8px !important;
+            right: 8px !important;
+            z-index: 9999999 !important;
+            width: 52px !important;
+            height: 46px !important;
+            min-height: 46px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.96) !important;
+            color: #111827 !important;
+            border: 1px solid rgba(15,23,42,0.18) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.24) !important;
+            font-size: 1.18rem !important;
+            font-weight: 900 !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    col_left, col_right = st.columns([12, 1])
+    toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
 
-    with col_right:
-        toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
-
-        if st.button(toggle_label, key="dark_bright_toggle_btn", help="Switch Dark / Bright mode"):
-            if st.session_state["theme_mode"] == "dark":
-                st.session_state["theme_mode"] = "bright"
-            else:
-                st.session_state["theme_mode"] = "dark"
+    if st.button(
+        toggle_label,
+        key="dark_bright_toggle_btn",
+        help="Switch Dark / Bright mode"
+    ):
+        if st.session_state["theme_mode"] == "dark":
+            st.session_state["theme_mode"] = "bright"
+        else:
+            st.session_state["theme_mode"] = "dark"
 
     if st.session_state["theme_mode"] == "bright":
         st.markdown(
@@ -406,7 +442,7 @@ def apply_dark_bright_toggle():
                BRIGHT MODE MAIN CARD
                ========================= */
             [data-testid="stAppViewContainer"] .block-container {{
-                background: rgba(255,255,255,0.74) !important;
+                background: rgba(255,255,255,0.76) !important;
                 border: 1px solid rgba(15,23,42,0.14) !important;
                 box-shadow: 0 12px 28px rgba(15,23,42,0.22) !important;
                 backdrop-filter: blur(8px) !important;
@@ -418,6 +454,28 @@ def apply_dark_bright_toggle():
                ========================= */
             h1, h2, h3, h4, h5, h6, p, label,
             .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE INPUTS / PARAMETERS
+               ========================= */
+            input, textarea, select {{
+                background-color: rgba(255,255,255,0.96) !important;
+                color: #111827 !important;
+                border-radius: 10px !important;
+            }}
+
+            [data-testid="stNumberInput"] input {{
+                background-color: rgba(255,255,255,0.96) !important;
+                color: #111827 !important;
+            }}
+
+            [data-testid="stNumberInput"] label,
+            [data-testid="stSlider"] label,
+            [data-testid="stSelectbox"] label,
+            [data-testid="stMultiSelect"] label,
+            [data-testid="stTextInput"] label {{
                 color: #111827 !important;
             }}
 
@@ -458,6 +516,18 @@ def apply_dark_bright_toggle():
                 background: rgba(255,255,255,0.82) !important;
                 border: 1px solid rgba(15,23,42,0.16) !important;
                 color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE ALERTS
+               ========================= */
+            [data-testid="stAlert"] {{
+                box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
             }}
 
             /* =========================
