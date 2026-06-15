@@ -282,7 +282,7 @@ def apply_branding(
         """,
         unsafe_allow_html=True
     )
-    def apply_dark_bright_toggle():
+ def apply_dark_bright_toggle():
     """
     Adds a small Dark/Bright toggle UI and applies Bright mode override CSS.
     Existing dark theme from apply_branding() remains unchanged.
@@ -434,7 +434,7 @@ def apply_branding(
             </style>
             """,
             unsafe_allow_html=True
-        )
+        )   
 
 
 
