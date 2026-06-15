@@ -89,6 +89,7 @@ def apply_branding(
             color: #111 !important;
             border-radius: 10px !important;
         }}
+
         [data-testid="stNumberInput"] input {{
             background-color: rgba(255,255,255,0.96) !important;
             color: #111 !important;
@@ -104,6 +105,7 @@ def apply_branding(
             padding: 12px !important;
             padding-bottom: 18px !important;
         }}
+
         [data-testid="stFileUploader"] section * {{
             color: #F8FAFC !important;
             font-weight: 600 !important;
@@ -119,9 +121,11 @@ def apply_branding(
             box-shadow: 0 8px 18px rgba(0,0,0,0.30) !important;
             padding: 0.45rem 1.00rem !important;
         }}
+
         [data-testid="stFileUploader"] section button:hover {{
             background: #f1f5f9 !important;
         }}
+
         [data-testid="stFileUploader"] section button * {{
             color: #111111 !important;
         }}
@@ -160,9 +164,11 @@ def apply_branding(
             height: 44px !important;
             padding: 0 !important;
         }}
+
         [data-testid="stFileUploaderFile"] button:hover {{
             background: #f1f5f9 !important;
         }}
+
         [data-testid="stFileUploaderFile"] button svg path,
         [data-testid="stFileUploaderFile"] button svg line,
         [data-testid="stFileUploaderFile"] button svg polyline {{
@@ -194,6 +200,7 @@ def apply_branding(
             border: none !important;
             box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
         }}
+
         .stButton > button[kind="primary"]:hover {{
             background: #e63d3d !important;
         }}
@@ -211,6 +218,7 @@ def apply_branding(
             border: none !important;
             box-shadow: 0 10px 22px rgba(0,0,0,0.30) !important;
         }}
+
         .stButton > button[kind="secondary"]:hover {{
             background: #1d4ed8 !important;
             color: #ffffff !important;
@@ -228,17 +236,21 @@ def apply_branding(
             box-shadow: 0 12px 26px rgba(0,0,0,0.28) !important;
             padding: 0.85rem 1.35rem !important;
         }}
+
         .stDownloadButton > button * {{
             color: #111111 !important;
         }}
+
         .stDownloadButton > button svg path,
         .stDownloadButton > button svg line,
         .stDownloadButton > button svg polyline {{
             stroke: #111111 !important;
         }}
+
         .stDownloadButton > button:hover {{
             background: #f8fafc !important;
         }}
+
         .stDownloadButton > button:disabled {{
             opacity: 1 !important;
             background: rgba(255,255,255,0.85) !important;
@@ -247,9 +259,11 @@ def apply_branding(
             box-shadow: none !important;
             cursor: not-allowed !important;
         }}
+
         .stDownloadButton > button:disabled * {{
             color: rgba(17,17,17,0.70) !important;
         }}
+
         .stDownloadButton > button:disabled svg path,
         .stDownloadButton > button:disabled svg line,
         .stDownloadButton > button:disabled svg polyline {{
@@ -265,6 +279,7 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.14) !important;
             padding: 0.15rem 0.25rem !important;
         }}
+
         details summary {{
             background: rgba(15, 23, 42, 0.62) !important;
             border-radius: 10px !important;
@@ -282,7 +297,9 @@ def apply_branding(
         """,
         unsafe_allow_html=True
     )
- def apply_dark_bright_toggle():
+
+
+def apply_dark_bright_toggle():
     """
     Adds a small Dark/Bright toggle UI and applies Bright mode override CSS.
     Existing dark theme from apply_branding() remains unchanged.
@@ -291,7 +308,6 @@ def apply_branding(
     if "theme_mode" not in st.session_state:
         st.session_state["theme_mode"] = "dark"
 
-    # Small top-right control like version pill + sun/moon button
     col_empty, col_version, col_toggle = st.columns([8, 1, 1])
 
     with col_version:
@@ -304,14 +320,15 @@ def apply_branding(
 
     with col_toggle:
         toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
+
         if st.button(toggle_label, key="dark_bright_toggle_btn", help="Switch Dark / Bright mode"):
             if st.session_state["theme_mode"] == "dark":
                 st.session_state["theme_mode"] = "bright"
             else:
                 st.session_state["theme_mode"] = "dark"
+
             st.rerun()
 
-    # Common styling for version pill and top toggle area
     st.markdown(
         """
         <style>
@@ -329,6 +346,14 @@ def apply_branding(
             font-weight: 800;
             font-size: 0.95rem;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        div[data-testid="column"]:has(.theme-version-pill) {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
 
         button[kind="secondary"] {
@@ -339,7 +364,6 @@ def apply_branding(
         unsafe_allow_html=True
     )
 
-    # Bright mode override only
     if st.session_state["theme_mode"] == "bright":
         st.markdown(
             f"""
