@@ -1,5 +1,3 @@
-DARK/Bright working code_15 June 2026
-
 
 import requests
 
