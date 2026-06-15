@@ -528,18 +528,6 @@ def apply_dark_bright_toggle():
             """,
             unsafe_allow_html=True
         )
-            }}
-
-            /* =========================
-               BRIGHT MODE ALERTS
-               ========================= */
-            [data-testid="stAlert"] {{
-                box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )   
 
 
 
