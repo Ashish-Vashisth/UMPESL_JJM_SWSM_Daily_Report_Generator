@@ -282,6 +282,159 @@ def apply_branding(
         """,
         unsafe_allow_html=True
     )
+    def apply_dark_bright_toggle():
+    """
+    Adds a small Dark/Bright toggle UI and applies Bright mode override CSS.
+    Existing dark theme from apply_branding() remains unchanged.
+    """
+
+    if "theme_mode" not in st.session_state:
+        st.session_state["theme_mode"] = "dark"
+
+    # Small top-right control like version pill + sun/moon button
+    col_empty, col_version, col_toggle = st.columns([8, 1, 1])
+
+    with col_version:
+        st.markdown(
+            """
+            <div class="theme-version-pill">v2.0</div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col_toggle:
+        toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
+        if st.button(toggle_label, key="dark_bright_toggle_btn", help="Switch Dark / Bright mode"):
+            if st.session_state["theme_mode"] == "dark":
+                st.session_state["theme_mode"] = "bright"
+            else:
+                st.session_state["theme_mode"] = "dark"
+            st.rerun()
+
+    # Common styling for version pill and top toggle area
+    st.markdown(
+        """
+        <style>
+        .theme-version-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 68px;
+            height: 38px;
+            padding: 0 16px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: #E5E7EB;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        button[kind="secondary"] {
+            min-height: 38px !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Bright mode override only
+    if st.session_state["theme_mode"] == "bright":
+        st.markdown(
+            f"""
+            <style>
+            /* =========================
+               BRIGHT MODE BACKGROUND
+               ========================= */
+            [data-testid="stAppViewContainer"] {{
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.52), rgba(255,255,255,0.52)),
+                    url("data:image/jpeg;base64,{BACKGROUND_B64}") !important;
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE MAIN CARD
+               ========================= */
+            [data-testid="stAppViewContainer"] .block-container {{
+                background: rgba(255,255,255,0.74) !important;
+                border: 1px solid rgba(15,23,42,0.14) !important;
+                box-shadow: 0 12px 28px rgba(15,23,42,0.22) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE TEXT
+               ========================= */
+            h1, h2, h3, h4, h5, h6, p, label,
+            .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE VERSION PILL
+               ========================= */
+            .theme-version-pill {{
+                background: rgba(255,255,255,0.72) !important;
+                border: 1px solid rgba(15,23,42,0.18) !important;
+                color: #111827 !important;
+                box-shadow: 0 8px 18px rgba(15,23,42,0.12) !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE FILE UPLOADER
+               ========================= */
+            [data-testid="stFileUploader"] section {{
+                background: rgba(15,23,42,0.08) !important;
+                border: 1px solid rgba(15,23,42,0.18) !important;
+            }}
+
+            [data-testid="stFileUploader"] section * {{
+                color: #111827 !important;
+                font-weight: 700 !important;
+            }}
+
+            [data-testid="stFileUploaderFile"],
+            [data-testid="stFileUploader"] li {{
+                background: rgba(255,255,255,0.75) !important;
+                border: 1px solid rgba(15,23,42,0.15) !important;
+            }}
+
+            [data-testid="stFileUploaderFile"] span,
+            [data-testid="stFileUploaderFile"] p,
+            [data-testid="stFileUploaderFile"] small {{
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE EXPANDERS
+               ========================= */
+            details {{
+                background: rgba(255,255,255,0.68) !important;
+                border: 1px solid rgba(15,23,42,0.16) !important;
+            }}
+
+            details summary {{
+                background: rgba(255,255,255,0.82) !important;
+                border: 1px solid rgba(15,23,42,0.16) !important;
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE ALERTS
+               ========================= */
+            [data-testid="stAlert"] {{
+                box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 
@@ -1211,9 +1364,9 @@ def build_critical_summary(lpcd_df: pd.DataFrame, critical_df: pd.DataFrame) -> 
 # ---------------------------
 st.set_page_config(page_title="UNIVERSAL MEP JJM SWSM Daily Report", layout="wide")
 apply_branding()
+apply_dark_bright_toggle()
 
 st.title("UNIVERSAL MEP JJM SWSM Daily Report Generator")
-st.write("Upload JJMUP export (.xls/.xlsx) → Download the formatted report Excel.")
 
 threshold = st.number_input(
     "Threshold (%) for SITES LESS THAN list",
