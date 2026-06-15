@@ -1,7 +1,6 @@
 
 
 import requests
-
 import plotly.express as px
 import plotly.graph_objects as go
 import re
@@ -10,6 +9,19 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
+
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment, Font, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
+
+
+# ===========================
+# Branding: Background Base64
+# ===========================
+# Paste your full Base64 JPG string below
+BACKGROUND_B64 = """/9j/4A...."""
+
+
 PLOTLY_DARK_THEME = {
     "paper_bgcolor": "rgba(0,0,0,0)",
     "plot_bgcolor": "rgba(0,0,0,0)",
@@ -48,6 +60,8 @@ def get_chart_grid_color():
     if st.session_state.get("theme_mode", "dark") == "bright":
         return "rgba(17,24,39,0.16)"
     return "rgba(255,255,255,0.18)"
+
+
 DISTRICT_URLS = {
     "AYODHYA": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=503&AgencyId=127&Header=Automation%20System%20Ayodhya%20(UNIVERSAL%20MEP)",
     "SULTANPUR": "https://jjm.up.gov.in/SKADA/Web_SKADA_DIstrict_Agency_Dashboard?DistrictId=505&AgencyId=127&Header=Automation%20System%20Sultanpur%20(UNIVERSAL%20MEP)",
@@ -76,9 +90,6 @@ def apply_branding(
     st.markdown(
         f"""
         <style>
-        /* =========================
-           APP BACKGROUND (IMAGE)
-           ========================= */
         [data-testid="stAppViewContainer"] {{
             background-image:
                 linear-gradient(rgba(0,0,0,{bg_overlay_opacity}), rgba(0,0,0,{bg_overlay_opacity})),
@@ -89,9 +100,6 @@ def apply_branding(
             background-attachment: fixed;
         }}
 
-        /* =========================
-           MAIN CONTENT CARD
-           ========================= */
         [data-testid="stAppViewContainer"] .block-container {{
             padding-top: 2.2rem;
             padding-bottom: 2rem;
@@ -104,17 +112,11 @@ def apply_branding(
             overflow: visible !important;
         }}
 
-        /* =========================
-           TEXT
-           ========================= */
         h1, h2, h3, h4, h5, h6, p, label,
         .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
             color: #F5F6F7 !important;
         }}
 
-        /* =========================
-           INPUTS
-           ========================= */
         input, textarea, select {{
             background-color: rgba(255,255,255,0.96) !important;
             color: #111 !important;
@@ -126,9 +128,6 @@ def apply_branding(
             color: #111 !important;
         }}
 
-        /* =========================
-           FILE UPLOADER AREA
-           ========================= */
         [data-testid="stFileUploader"] section {{
             background: rgba(255,255,255,0.18) !important;
             border-radius: 12px !important;
@@ -142,7 +141,6 @@ def apply_branding(
             font-weight: 600 !important;
         }}
 
-        /* Browse files button */
         [data-testid="stFileUploader"] section button {{
             background: #ffffff !important;
             color: #111111 !important;
@@ -161,9 +159,6 @@ def apply_branding(
             color: #111111 !important;
         }}
 
-        /* =========================
-           UPLOADED FILE STRIP
-           ========================= */
         [data-testid="stFileUploaderFile"],
         [data-testid="stFileUploader"] li {{
             background: rgba(255,255,255,0.16) !important;
@@ -175,7 +170,6 @@ def apply_branding(
             -webkit-backdrop-filter: blur(6px);
         }}
 
-        /* Filename text inside strip */
         [data-testid="stFileUploaderFile"] span,
         [data-testid="stFileUploaderFile"] p,
         [data-testid="stFileUploaderFile"] small {{
@@ -183,9 +177,6 @@ def apply_branding(
             font-weight: 700 !important;
         }}
 
-        /* =========================
-           STRIP CLOSE (X) BUTTON
-           ========================= */
         [data-testid="stFileUploaderFile"] button {{
             background: #ffffff !important;
             border-radius: 12px !important;
@@ -207,9 +198,6 @@ def apply_branding(
             stroke-width: 2 !important;
         }}
 
-        /* =========================
-           ALERTS
-           ========================= */
         [data-testid="stAlert"] {{
             border-radius: 12px !important;
             padding: 0.75rem 1rem !important;
@@ -218,9 +206,6 @@ def apply_branding(
             border: 1px solid rgba(255,255,255,0.12) !important;
         }}
 
-        /* =========================
-           PRIMARY BUTTON (GENERATE REPORT) - RED
-           ========================= */
         .stButton > button[kind="primary"] {{
             background: #ff4b4b !important;
             color: #ffffff !important;
@@ -236,9 +221,6 @@ def apply_branding(
             background: #e63d3d !important;
         }}
 
-        /* =========================
-           SECONDARY BUTTONS (DISTRICT BUTTONS) - BLUE
-           ========================= */
         .stButton > button[kind="secondary"] {{
             background: #2563eb !important;
             color: #ffffff !important;
@@ -255,9 +237,6 @@ def apply_branding(
             color: #ffffff !important;
         }}
 
-        /* =========================
-           DOWNLOAD BUTTON
-           ========================= */
         .stDownloadButton > button {{
             background: #ffffff !important;
             color: #111111 !important;
@@ -282,28 +261,6 @@ def apply_branding(
             background: #f8fafc !important;
         }}
 
-        .stDownloadButton > button:disabled {{
-            opacity: 1 !important;
-            background: rgba(255,255,255,0.85) !important;
-            color: rgba(17,17,17,0.85) !important;
-            border: 2px solid rgba(0,0,0,0.06) !important;
-            box-shadow: none !important;
-            cursor: not-allowed !important;
-        }}
-
-        .stDownloadButton > button:disabled * {{
-            color: rgba(17,17,17,0.70) !important;
-        }}
-
-        .stDownloadButton > button:disabled svg path,
-        .stDownloadButton > button:disabled svg line,
-        .stDownloadButton > button:disabled svg polyline {{
-            stroke: rgba(17,17,17,0.70) !important;
-        }}
-
-        /* =========================
-           EXPANDERS READABILITY
-           ========================= */
         details {{
             background: rgba(15, 23, 42, 0.45) !important;
             border-radius: 12px !important;
@@ -319,7 +276,6 @@ def apply_branding(
             color: #f8fafc !important;
         }}
 
-        /* Restore dataframe toolbar */
         [data-testid="stDataFrameToolbar"] {{
             visibility: visible !important;
             opacity: 1 !important;
@@ -343,10 +299,6 @@ def apply_dark_bright_toggle():
     st.markdown(
         """
         <style>
-        /* =====================================================
-           FIXED DARK / BRIGHT TOGGLE BUTTON - EXTREME TOP RIGHT
-           ===================================================== */
-
         .st-key-dark_bright_toggle_btn {
             position: fixed !important;
             top: 8px !important;
@@ -384,26 +336,6 @@ def apply_dark_bright_toggle():
             border: 1px solid rgba(15,23,42,0.30) !important;
             box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
         }
-
-        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"],
-        div[data-testid="stButton"] button[aria-label="Switch Dark / Bright mode"] {
-            position: fixed !important;
-            top: 8px !important;
-            right: 8px !important;
-            z-index: 9999999 !important;
-            width: 52px !important;
-            height: 46px !important;
-            min-height: 46px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border-radius: 14px !important;
-            background: rgba(255,255,255,0.96) !important;
-            color: #111827 !important;
-            border: 1px solid rgba(15,23,42,0.18) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.24) !important;
-            font-size: 1.18rem !important;
-            font-weight: 900 !important;
-        }
         </style>
         """,
         unsafe_allow_html=True
@@ -425,9 +357,6 @@ def apply_dark_bright_toggle():
         st.markdown(
             f"""
             <style>
-            /* =========================
-               BRIGHT MODE BACKGROUND
-               ========================= */
             [data-testid="stAppViewContainer"] {{
                 background-image:
                     linear-gradient(rgba(255,255,255,0.52), rgba(255,255,255,0.52)),
@@ -438,9 +367,6 @@ def apply_dark_bright_toggle():
                 background-attachment: fixed !important;
             }}
 
-            /* =========================
-               BRIGHT MODE MAIN CARD
-               ========================= */
             [data-testid="stAppViewContainer"] .block-container {{
                 background: rgba(255,255,255,0.76) !important;
                 border: 1px solid rgba(15,23,42,0.14) !important;
@@ -449,17 +375,11 @@ def apply_dark_bright_toggle():
                 -webkit-backdrop-filter: blur(8px) !important;
             }}
 
-            /* =========================
-               BRIGHT MODE TEXT
-               ========================= */
             h1, h2, h3, h4, h5, h6, p, label,
             .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE INPUTS / PARAMETERS
-               ========================= */
             input, textarea, select {{
                 background-color: rgba(255,255,255,0.96) !important;
                 color: #111827 !important;
@@ -479,9 +399,6 @@ def apply_dark_bright_toggle():
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE FILE UPLOADER
-               ========================= */
             [data-testid="stFileUploader"] section {{
                 background: rgba(15,23,42,0.08) !important;
                 border: 1px solid rgba(15,23,42,0.18) !important;
@@ -504,9 +421,6 @@ def apply_dark_bright_toggle():
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE EXPANDERS
-               ========================= */
             details {{
                 background: rgba(255,255,255,0.68) !important;
                 border: 1px solid rgba(15,23,42,0.16) !important;
@@ -518,9 +432,6 @@ def apply_dark_bright_toggle():
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE ALERTS
-               ========================= */
             [data-testid="stAlert"] {{
                 box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
             }}
