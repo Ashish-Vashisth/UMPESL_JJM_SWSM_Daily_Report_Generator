@@ -472,7 +472,7 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds thunderstorm + rain visual effect only in Dark mode.
+    Adds clearly visible moving rain + thunderstorm effect only in Dark mode.
     Bright mode remains clean.
     """
 
@@ -482,84 +482,108 @@ def apply_dark_mode_weather_effect():
     st.markdown(
         """
         <style>
-        /* Keep main app content above weather effect */
-        [data-testid="stAppViewContainer"] .block-container {
-            position: relative !important;
-            z-index: 2 !important;
-        }
+        /* =====================================================
+           STRONG RAIN EFFECT - DARK MODE ONLY
+           ===================================================== */
 
-        /* Rain effect layer */
-        [data-testid="stAppViewContainer"]::before {
+        body::before {
             content: "";
             position: fixed;
-            inset: 0;
+            top: -120px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh + 240px);
             pointer-events: none;
-            z-index: 1;
-            opacity: 0.22;
+            z-index: 9998;
+            opacity: 0.42;
 
             background-image:
                 linear-gradient(
                     115deg,
+                    rgba(180,210,255,0.00) 0%,
+                    rgba(180,210,255,0.00) 38%,
+                    rgba(180,210,255,0.85) 39%,
+                    rgba(180,210,255,0.85) 42%,
+                    rgba(180,210,255,0.00) 43%,
+                    rgba(180,210,255,0.00) 100%
+                ),
+                linear-gradient(
+                    115deg,
                     rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 42%,
-                    rgba(180,210,255,0.55) 43%,
-                    rgba(180,210,255,0.55) 45%,
-                    rgba(255,255,255,0.00) 46%,
+                    rgba(255,255,255,0.00) 45%,
+                    rgba(255,255,255,0.60) 46%,
+                    rgba(255,255,255,0.60) 48%,
+                    rgba(255,255,255,0.00) 49%,
                     rgba(255,255,255,0.00) 100%
                 );
 
-            background-size: 22px 42px;
-            animation: rainMove 0.38s linear infinite;
+            background-size: 18px 48px, 28px 70px;
+            animation: heavyRainMove 0.28s linear infinite;
         }
 
-        @keyframes rainMove {
+        @keyframes heavyRainMove {
             0% {
-                background-position: 0px -60px;
+                background-position: 0px -120px, 0px -160px;
             }
             100% {
-                background-position: -38px 60px;
+                background-position: -55px 120px, -80px 160px;
             }
         }
 
-        /* Lightning / thunder flash layer */
-        [data-testid="stAppViewContainer"]::after {
+        /* =====================================================
+           THUNDER / LIGHTNING FLASH
+           ===================================================== */
+
+        body::after {
             content: "";
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 1;
+            z-index: 9997;
             background:
                 radial-gradient(
-                    circle at 72% 8%,
-                    rgba(255,255,255,0.60),
-                    rgba(255,255,255,0.12) 18%,
+                    circle at 70% 8%,
+                    rgba(255,255,255,0.85),
+                    rgba(255,255,255,0.22) 18%,
                     rgba(255,255,255,0.00) 42%
+                ),
+                linear-gradient(
+                    rgba(255,255,255,0.10),
+                    rgba(255,255,255,0.00)
                 );
             opacity: 0;
-            animation: thunderFlash 7s infinite;
+            animation: thunderFlashStrong 6s infinite;
         }
 
-        @keyframes thunderFlash {
-            0%, 76%, 100% {
+        @keyframes thunderFlashStrong {
+            0%, 72%, 100% {
                 opacity: 0;
             }
-            77% {
-                opacity: 0.80;
+            73% {
+                opacity: 0.95;
             }
-            78% {
-                opacity: 0.12;
+            74% {
+                opacity: 0.10;
             }
-            79% {
-                opacity: 0.55;
+            75% {
+                opacity: 0.70;
             }
-            80%, 100% {
+            76%, 100% {
                 opacity: 0;
             }
         }
 
-        /* Extra storm darkness in dark mode */
-        [data-testid="stAppViewContainer"] {
-            box-shadow: inset 0 0 180px rgba(0,0,0,0.38) !important;
+        /* Keep main app usable */
+        [data-testid="stAppViewContainer"] .block-container {
+            position: relative !important;
+            z-index: 10000 !important;
+        }
+
+        /* Keep Streamlit header/button above rain */
+        header,
+        .st-key-dark_bright_toggle_btn,
+        .st-key-dark_bright_toggle_btn button {
+            z-index: 10000000 !important;
         }
         </style>
         """,
