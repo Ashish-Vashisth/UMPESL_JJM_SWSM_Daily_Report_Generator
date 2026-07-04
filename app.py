@@ -754,154 +754,128 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds fine full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
+    rain_drops = []
+
+    left_value = 1
+    delay_value = 0
+
+    duration_values = [1.75, 1.82, 1.90, 1.98, 2.05, 2.12]
+    length_values = [28, 32, 36, 40, 44]
+    opacity_values = [0.22, 0.26, 0.30, 0.34]
+    drift_values = [-56, -64, -72, -80]
+
+    duration_index = 0
+    length_index = 0
+    opacity_index = 0
+    drift_index = 0
+
+    for item in range(135):
+        rain_drops.append(
+            (
+                round(left_value, 2),
+                round(delay_value, 2),
+                duration_values[duration_index],
+                length_values[length_index],
+                opacity_values[opacity_index],
+                drift_values[drift_index],
+            )
+        )
+
+        left_value = left_value + 6.9
+        if left_value > 100:
+            left_value = left_value - 100
+
+        delay_value = delay_value - 0.11
+        if delay_value < -6.8:
+            delay_value = delay_value + 6.8
+
+        duration_index = duration_index + 1
+        if duration_index >= len(duration_values):
+            duration_index = 0
+
+        length_index = length_index + 1
+        if length_index >= len(length_values):
+            length_index = 0
+
+        opacity_index = opacity_index + 1
+        if opacity_index >= len(opacity_values):
+            opacity_index = 0
+
+        drift_index = drift_index + 1
+        if drift_index >= len(drift_values):
+            drift_index = 0
+
+    drops_html = ""
+
+    for left, delay, duration, length, opacity, drift in rain_drops:
+        drops_html += (
+            f'<span class="storm-rain-drop" '
+            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
+            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
+        )
+
     st.markdown(
-        """
+        f"""
         <style>
-        body::before {
-            content: "";
+        .storm-rain-layer {{
             position: fixed !important;
-            inset: 0 !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             pointer-events: none !important;
+            overflow: hidden !important;
             z-index: 2147483000 !important;
-            opacity: 0.72 !important;
+        }}
 
-            background-image:
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 47%,
-                    rgba(220,230,245,0.48) 48%,
-                    rgba(220,230,245,0.48) 49%,
-                    transparent 50%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 48%,
-                    rgba(220,230,245,0.42) 49%,
-                    rgba(220,230,245,0.42) 50%,
-                    transparent 51%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 46%,
-                    rgba(220,230,245,0.36) 47%,
-                    rgba(220,230,245,0.36) 48%,
-                    transparent 49%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49%,
-                    rgba(220,230,245,0.32) 50%,
-                    rgba(220,230,245,0.32) 51%,
-                    transparent 52%,
-                    transparent 100%
-                );
+        .storm-rain-drop {{
+            position: absolute;
+            top: -90px;
+            left: var(--left);
+            width: 0.75px;
+            height: var(--length);
+            opacity: 0;
+            border-radius: 999px;
+            background: linear-gradient(
+                to bottom,
+                rgba(220,230,245,0.00),
+                rgba(220,230,245,0.58),
+                rgba(220,230,245,0.00)
+            );
+            filter: blur(0.04px);
+            transform: rotate(-8deg);
+            animation: fineScreenRain var(--duration) linear infinite;
+            animation-delay: var(--delay);
+        }}
 
-            background-size:
-                115px 210px,
-                155px 260px,
-                205px 320px,
-                260px 390px;
+        @keyframes fineScreenRain {{
+            0% {{
+                transform: translate3d(0, -24vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
 
-            background-position:
-                0px -220px,
-                55px -260px,
-                120px -320px,
-                190px -390px;
+            8% {{
+                opacity: var(--opacity);
+            }}
 
-            animation: fullScreenDrizzleOne 1.35s linear infinite;
-        }
+            84% {{
+                opacity: var(--opacity);
+            }}
 
-        @keyframes fullScreenDrizzleOne {
-            0% {
-                background-position:
-                    0px -220px,
-                    55px -260px,
-                    120px -320px,
-                    190px -390px;
-            }
+            100% {{
+                transform: translate3d(var(--drift), 130vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
+        }}
 
-            100% {
-                background-position:
-                    -80px 220px,
-                    -45px 260px,
-                    20px 320px,
-                    90px 390px;
-            }
-        }
-
-        [data-testid="stAppViewContainer"]::before {
-            content: "";
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            pointer-events: none !important;
-            z-index: 2147483000 !important;
-            opacity: 0.52 !important;
-
-            background-image:
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 47%,
-                    rgba(220,230,245,0.38) 48%,
-                    rgba(220,230,245,0.38) 49%,
-                    transparent 50%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 48%,
-                    rgba(220,230,245,0.34) 49%,
-                    rgba(220,230,245,0.34) 50%,
-                    transparent 51%,
-                    transparent 100%
-                );
-
-            background-size:
-                175px 300px,
-                245px 420px;
-
-            background-position:
-                85px -300px,
-                165px -420px;
-
-            animation: fullScreenDrizzleTwo 1.65s linear infinite;
-        }
-
-        @keyframes fullScreenDrizzleTwo {
-            0% {
-                background-position:
-                    85px -300px,
-                    165px -420px;
-            }
-
-            100% {
-                background-position:
-                    -55px 300px,
-                    20px 420px;
-            }
-        }
-
-        body::after {
-            content: "";
+        .storm-lightning-flash {{
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
@@ -910,7 +884,6 @@ def apply_dark_mode_weather_effect():
             z-index: 2147483001 !important;
             opacity: 0;
             mix-blend-mode: screen;
-
             background:
                 radial-gradient(
                     circle at 68% 7%,
@@ -925,52 +898,56 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.12),
                     rgba(255,255,255,0.00)
                 );
-
             animation: brightStormFlash 6.2s infinite;
-        }
+        }}
 
-        @keyframes brightStormFlash {
-            0%, 62%, 100% {
+        @keyframes brightStormFlash {{
+            0%, 62%, 100% {{
                 opacity: 0;
-            }
+            }}
 
-            63% {
+            63% {{
                 opacity: 1;
-            }
+            }}
 
-            64% {
+            64% {{
                 opacity: 0.18;
-            }
+            }}
 
-            65% {
+            65% {{
                 opacity: 0.95;
-            }
+            }}
 
-            66% {
+            66% {{
                 opacity: 0.12;
-            }
+            }}
 
-            67% {
+            67% {{
                 opacity: 0.78;
-            }
+            }}
 
-            68%, 100% {
+            68%, 100% {{
                 opacity: 0;
-            }
-        }
-
-        body::before,
-        body::after,
-        [data-testid="stAppViewContainer"]::before {
-            pointer-events: none !important;
-        }
+            }}
+        }}
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {
+        .st-key-dark_bright_toggle_btn button {{
             z-index: 2147483647 !important;
-        }
+        }}
+
+        .storm-rain-layer,
+        .storm-rain-drop,
+        .storm-lightning-flash {{
+            pointer-events: none !important;
+        }}
         </style>
+
+        <div class="storm-rain-layer">
+            {drops_html}
+        </div>
+        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
