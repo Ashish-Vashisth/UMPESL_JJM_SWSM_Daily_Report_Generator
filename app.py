@@ -472,7 +472,7 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds light drizzle rain + brighter thunderstorm flash only in Dark mode.
+    Adds sparse long drizzle rain + brighter thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
@@ -483,79 +483,119 @@ def apply_dark_mode_weather_effect():
         """
         <style>
         /* =====================================================
-           LIGHT DRIZZLE RAIN EFFECT - DARK MODE ONLY
+           SPARSE LONG DRIZZLE RAIN - DARK MODE ONLY
+           Few long slanted drops like reference image
            ===================================================== */
 
         body::before {
             content: "";
             position: fixed;
-            top: -160px;
+            top: -180px;
             left: 0;
             width: 100vw;
-            height: calc(100vh + 320px);
+            height: calc(100vh + 360px);
             pointer-events: none;
             z-index: 9998;
-            opacity: 0.34;
+            opacity: 0.42;
 
             background-image:
                 linear-gradient(
-                    105deg,
+                    100deg,
                     rgba(255,255,255,0.00) 0%,
                     rgba(255,255,255,0.00) 48%,
-                    rgba(170,190,220,0.36) 49%,
-                    rgba(170,190,220,0.36) 50%,
+                    rgba(190,205,225,0.40) 49%,
+                    rgba(190,205,225,0.40) 50%,
                     rgba(255,255,255,0.00) 51%,
                     rgba(255,255,255,0.00) 100%
                 ),
                 linear-gradient(
-                    105deg,
+                    100deg,
                     rgba(255,255,255,0.00) 0%,
                     rgba(255,255,255,0.00) 48%,
-                    rgba(210,225,245,0.26) 49%,
-                    rgba(210,225,245,0.26) 50%,
+                    rgba(180,195,215,0.34) 49%,
+                    rgba(180,195,215,0.34) 50%,
                     rgba(255,255,255,0.00) 51%,
                     rgba(255,255,255,0.00) 100%
                 ),
                 linear-gradient(
-                    105deg,
+                    100deg,
                     rgba(255,255,255,0.00) 0%,
                     rgba(255,255,255,0.00) 48%,
-                    rgba(180,205,235,0.22) 49%,
-                    rgba(180,205,235,0.22) 50%,
+                    rgba(220,230,245,0.28) 49%,
+                    rgba(220,230,245,0.28) 50%,
                     rgba(255,255,255,0.00) 51%,
                     rgba(255,255,255,0.00) 100%
                 );
 
             background-size:
-                92px 190px,
-                135px 260px,
-                180px 330px;
+                210px 360px,
+                290px 460px,
+                380px 560px;
 
             background-position:
-                0px -200px,
-                40px -260px,
-                90px -320px;
+                20px -260px,
+                150px -420px,
+                320px -520px;
 
-            animation: drizzleRainMove 1.35s linear infinite;
+            animation: sparseDrizzleMove 2.4s linear infinite;
         }
 
-        @keyframes drizzleRainMove {
+        @keyframes sparseDrizzleMove {
             0% {
                 background-position:
-                    0px -220px,
-                    40px -280px,
-                    90px -340px;
+                    20px -300px,
+                    150px -460px,
+                    320px -600px;
             }
+
             100% {
                 background-position:
-                    -42px 220px,
-                    -30px 280px,
-                    10px 340px;
+                    -70px 300px,
+                    30px 460px,
+                    170px 600px;
             }
         }
 
         /* =====================================================
-           BRIGHT THUNDER / LIGHTNING FLASH
+           EXTRA FEW RANDOM-LOOKING LONG DROPS
+           ===================================================== */
+
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.38;
+
+            background-image:
+                linear-gradient(
+                    100deg,
+                    rgba(255,255,255,0.00) 0%,
+                    rgba(255,255,255,0.00) 48%,
+                    rgba(190,205,225,0.42) 49%,
+                    rgba(190,205,225,0.42) 50%,
+                    rgba(255,255,255,0.00) 51%,
+                    rgba(255,255,255,0.00) 100%
+                );
+
+            background-size: 430px 620px;
+            background-position: 80px -520px;
+            animation: sparseDrizzleMoveSecond 3.2s linear infinite;
+        }
+
+        @keyframes sparseDrizzleMoveSecond {
+            0% {
+                background-position: 80px -620px;
+            }
+
+            100% {
+                background-position: -120px 620px;
+            }
+        }
+
+        /* =====================================================
+           BRIGHTER THUNDER / LIGHTNING FLASH
            ===================================================== */
 
         body::after {
@@ -567,49 +607,49 @@ def apply_dark_mode_weather_effect():
 
             background:
                 radial-gradient(
-                    circle at 70% 8%,
-                    rgba(255,255,255,0.95),
-                    rgba(255,255,255,0.40) 16%,
-                    rgba(255,255,255,0.12) 32%,
-                    rgba(255,255,255,0.00) 52%
+                    circle at 72% 6%,
+                    rgba(255,255,255,1.00),
+                    rgba(255,255,255,0.62) 14%,
+                    rgba(255,255,255,0.24) 30%,
+                    rgba(255,255,255,0.00) 55%
                 ),
                 linear-gradient(
-                    rgba(255,255,255,0.22),
-                    rgba(255,255,255,0.04),
+                    rgba(255,255,255,0.34),
+                    rgba(255,255,255,0.10),
                     rgba(255,255,255,0.00)
                 );
 
             opacity: 0;
             mix-blend-mode: screen;
-            animation: brightThunderFlash 5.8s infinite;
+            animation: strongLightningFlash 5.5s infinite;
         }
 
-        @keyframes brightThunderFlash {
-            0%, 68%, 100% {
+        @keyframes strongLightningFlash {
+            0%, 64%, 100% {
                 opacity: 0;
             }
 
-            69% {
+            65% {
                 opacity: 1;
             }
 
-            70% {
-                opacity: 0.18;
+            66% {
+                opacity: 0.15;
             }
 
-            71% {
-                opacity: 0.82;
+            67% {
+                opacity: 0.92;
             }
 
-            72% {
-                opacity: 0.10;
+            68% {
+                opacity: 0.20;
             }
 
-            73% {
-                opacity: 0.55;
+            69% {
+                opacity: 0.72;
             }
 
-            74%, 100% {
+            70%, 100% {
                 opacity: 0;
             }
         }
