@@ -474,7 +474,7 @@ def apply_dark_mode_weather_effect():
     """
     Adds full-screen natural rain + bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Rain remains visible across the full viewport while scrolling.
+    Smaller droplets with increased count.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
@@ -485,7 +485,7 @@ def apply_dark_mode_weather_effect():
         <style>
         /* =====================================================
            FULL VIEWPORT RAIN LAYER
-           Covers entire visible screen, including after scrolling
+           Smaller droplets + more count
            ===================================================== */
 
         body::before {
@@ -493,8 +493,8 @@ def apply_dark_mode_weather_effect():
             position: fixed !important;
             top: -160px !important;
             left: 0 !important;
-            width: 2px !important;
-            height: 72px !important;
+            width: 1px !important;
+            height: 48px !important;
             pointer-events: none !important;
             z-index: 2147483000 !important;
             opacity: 1 !important;
@@ -503,66 +503,92 @@ def apply_dark_mode_weather_effect():
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
-                rgba(220,230,245,0.62),
+                rgba(220,230,245,0.58),
                 rgba(220,230,245,0.00)
             ) !important;
 
-            filter: blur(0.15px);
+            filter: blur(0.10px);
             transform: rotate(-8deg);
 
             box-shadow:
-                2vw 3vh 0 rgba(220,230,245,0.32),
-                6vw 18vh 0 rgba(220,230,245,0.40),
-                10vw 34vh 0 rgba(220,230,245,0.34),
-                14vw 8vh 0 rgba(220,230,245,0.38),
-                18vw 48vh 0 rgba(220,230,245,0.42),
-                22vw 25vh 0 rgba(220,230,245,0.36),
-                26vw 62vh 0 rgba(220,230,245,0.44),
-                30vw 12vh 0 rgba(220,230,245,0.34),
-                34vw 39vh 0 rgba(220,230,245,0.42),
-                38vw 70vh 0 rgba(220,230,245,0.36),
-                42vw 21vh 0 rgba(220,230,245,0.40),
-                46vw 54vh 0 rgba(220,230,245,0.46),
-                50vw 7vh 0 rgba(220,230,245,0.34),
-                54vw 31vh 0 rgba(220,230,245,0.42),
-                58vw 66vh 0 rgba(220,230,245,0.36),
-                62vw 15vh 0 rgba(220,230,245,0.44),
-                66vw 43vh 0 rgba(220,230,245,0.38),
-                70vw 75vh 0 rgba(220,230,245,0.46),
-                74vw 27vh 0 rgba(220,230,245,0.40),
-                78vw 58vh 0 rgba(220,230,245,0.34),
-                82vw 11vh 0 rgba(220,230,245,0.42),
-                86vw 36vh 0 rgba(220,230,245,0.46),
-                90vw 68vh 0 rgba(220,230,245,0.38),
-                94vw 22vh 0 rgba(220,230,245,0.44),
-                98vw 51vh 0 rgba(220,230,245,0.36),
+                2vw 3vh 0 rgba(220,230,245,0.30),
+                5vw 12vh 0 rgba(220,230,245,0.34),
+                8vw 24vh 0 rgba(220,230,245,0.30),
+                11vw 38vh 0 rgba(220,230,245,0.36),
+                14vw 8vh 0 rgba(220,230,245,0.32),
+                17vw 52vh 0 rgba(220,230,245,0.38),
+                20vw 20vh 0 rgba(220,230,245,0.34),
+                23vw 65vh 0 rgba(220,230,245,0.36),
+                26vw 33vh 0 rgba(220,230,245,0.32),
+                29vw 78vh 0 rgba(220,230,245,0.38),
 
-                5vw 82vh 0 rgba(220,230,245,0.34),
-                12vw 72vh 0 rgba(220,230,245,0.40),
-                19vw 90vh 0 rgba(220,230,245,0.36),
-                27vw 85vh 0 rgba(220,230,245,0.42),
-                35vw 93vh 0 rgba(220,230,245,0.34),
-                48vw 88vh 0 rgba(220,230,245,0.44),
-                60vw 94vh 0 rgba(220,230,245,0.38),
-                73vw 86vh 0 rgba(220,230,245,0.42),
-                88vw 92vh 0 rgba(220,230,245,0.36);
+                32vw 10vh 0 rgba(220,230,245,0.30),
+                35vw 42vh 0 rgba(220,230,245,0.36),
+                38vw 72vh 0 rgba(220,230,245,0.34),
+                41vw 18vh 0 rgba(220,230,245,0.38),
+                44vw 55vh 0 rgba(220,230,245,0.32),
+                47vw 86vh 0 rgba(220,230,245,0.36),
+                50vw 6vh 0 rgba(220,230,245,0.30),
+                53vw 30vh 0 rgba(220,230,245,0.38),
+                56vw 63vh 0 rgba(220,230,245,0.34),
+                59vw 92vh 0 rgba(220,230,245,0.36),
 
-            animation: fullViewportRain 1.55s linear infinite;
+                62vw 14vh 0 rgba(220,230,245,0.38),
+                65vw 46vh 0 rgba(220,230,245,0.32),
+                68vw 74vh 0 rgba(220,230,245,0.36),
+                71vw 22vh 0 rgba(220,230,245,0.30),
+                74vw 58vh 0 rgba(220,230,245,0.38),
+                77vw 84vh 0 rgba(220,230,245,0.34),
+                80vw 9vh 0 rgba(220,230,245,0.36),
+                83vw 36vh 0 rgba(220,230,245,0.38),
+                86vw 68vh 0 rgba(220,230,245,0.32),
+                89vw 95vh 0 rgba(220,230,245,0.36),
+
+                92vw 25vh 0 rgba(220,230,245,0.34),
+                95vw 51vh 0 rgba(220,230,245,0.38),
+                98vw 80vh 0 rgba(220,230,245,0.32),
+
+                4vw 88vh 0 rgba(220,230,245,0.34),
+                9vw 70vh 0 rgba(220,230,245,0.36),
+                13vw 94vh 0 rgba(220,230,245,0.30),
+                18vw 82vh 0 rgba(220,230,245,0.38),
+                24vw 91vh 0 rgba(220,230,245,0.34),
+                31vw 86vh 0 rgba(220,230,245,0.36),
+                37vw 96vh 0 rgba(220,230,245,0.32),
+                45vw 90vh 0 rgba(220,230,245,0.38),
+                52vw 83vh 0 rgba(220,230,245,0.34),
+                61vw 97vh 0 rgba(220,230,245,0.36),
+                69vw 89vh 0 rgba(220,230,245,0.30),
+                76vw 96vh 0 rgba(220,230,245,0.38),
+                84vw 87vh 0 rgba(220,230,245,0.34),
+                93vw 93vh 0 rgba(220,230,245,0.36),
+
+                7vw 5vh 0 rgba(220,230,245,0.30),
+                16vw 15vh 0 rgba(220,230,245,0.34),
+                27vw 5vh 0 rgba(220,230,245,0.32),
+                39vw 4vh 0 rgba(220,230,245,0.36),
+                49vw 16vh 0 rgba(220,230,245,0.30),
+                57vw 4vh 0 rgba(220,230,245,0.38),
+                72vw 6vh 0 rgba(220,230,245,0.34),
+                81vw 18vh 0 rgba(220,230,245,0.36),
+                97vw 7vh 0 rgba(220,230,245,0.32);
+
+            animation: fullViewportRainSmall 1.25s linear infinite;
         }
 
-        @keyframes fullViewportRain {
+        @keyframes fullViewportRainSmall {
             0% {
                 transform: translate3d(0, -24vh, 0) rotate(-8deg);
             }
 
             100% {
-                transform: translate3d(-90px, 135vh, 0) rotate(-8deg);
+                transform: translate3d(-85px, 135vh, 0) rotate(-8deg);
             }
         }
 
         /* =====================================================
            BRIGHT THUNDERSTORM FLASH
-           Kept bright and full-screen
+           Kept unchanged
            ===================================================== */
 
         [data-testid="stAppViewContainer"]::after {
