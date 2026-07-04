@@ -470,7 +470,101 @@ def apply_dark_bright_toggle():
             unsafe_allow_html=True
         )   
 
+def apply_dark_mode_weather_effect():
+    """
+    Adds thunderstorm + rain visual effect only in Dark mode.
+    Bright mode remains clean.
+    """
 
+    if st.session_state.get("theme_mode", "dark") != "dark":
+        return
+
+    st.markdown(
+        """
+        <style>
+        /* Keep main app content above weather effect */
+        [data-testid="stAppViewContainer"] .block-container {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+
+        /* Rain effect layer */
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.22;
+
+            background-image:
+                linear-gradient(
+                    115deg,
+                    rgba(255,255,255,0.00) 0%,
+                    rgba(255,255,255,0.00) 42%,
+                    rgba(180,210,255,0.55) 43%,
+                    rgba(180,210,255,0.55) 45%,
+                    rgba(255,255,255,0.00) 46%,
+                    rgba(255,255,255,0.00) 100%
+                );
+
+            background-size: 22px 42px;
+            animation: rainMove 0.38s linear infinite;
+        }
+
+        @keyframes rainMove {
+            0% {
+                background-position: 0px -60px;
+            }
+            100% {
+                background-position: -38px 60px;
+            }
+        }
+
+        /* Lightning / thunder flash layer */
+        [data-testid="stAppViewContainer"]::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background:
+                radial-gradient(
+                    circle at 72% 8%,
+                    rgba(255,255,255,0.60),
+                    rgba(255,255,255,0.12) 18%,
+                    rgba(255,255,255,0.00) 42%
+                );
+            opacity: 0;
+            animation: thunderFlash 7s infinite;
+        }
+
+        @keyframes thunderFlash {
+            0%, 76%, 100% {
+                opacity: 0;
+            }
+            77% {
+                opacity: 0.80;
+            }
+            78% {
+                opacity: 0.12;
+            }
+            79% {
+                opacity: 0.55;
+            }
+            80%, 100% {
+                opacity: 0;
+            }
+        }
+
+        /* Extra storm darkness in dark mode */
+        [data-testid="stAppViewContainer"] {
+            box-shadow: inset 0 0 180px rgba(0,0,0,0.38) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ---------------------------
 # Reading the uploaded file
@@ -1447,6 +1541,7 @@ def build_critical_summary(lpcd_df: pd.DataFrame, critical_df: pd.DataFrame) -> 
 st.set_page_config(page_title="UNIVERSAL MEP JJM SWSM Daily Report", layout="wide")
 apply_branding()
 apply_dark_bright_toggle()
+apply_dark_mode_weather_effect()
 
 st.title("UNIVERSAL MEP JJM SWSM Daily Report Generator")
 
