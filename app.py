@@ -495,7 +495,7 @@ def apply_dark_mode_weather_effect():
             height: calc(100vh + 240px);
             pointer-events: none;
             z-index: 9998;
-            opacity: 0.42;
+            opacity: 0.55;
 
             background-image:
                 linear-gradient(
