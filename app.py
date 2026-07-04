@@ -756,7 +756,7 @@ def apply_dark_mode_weather_effect():
     """
     Adds full-screen fine drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Drop count reduced and drop length reduced.
+    Drop length and count slightly increased. Falling speed unchanged.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
@@ -782,38 +782,46 @@ def apply_dark_mode_weather_effect():
             height: 124vh !important;
             pointer-events: none !important;
             z-index: 2147483000 !important;
-            opacity: 0.90 !important;
+            opacity: 0.92 !important;
             transform: rotate(-8deg);
 
             background-image:
                 radial-gradient(
-                    ellipse 0.70px 13px at 18% 12%,
-                    rgba(235,242,255,0.52) 0%,
-                    rgba(235,242,255,0.52) 58%,
+                    ellipse 0.70px 17px at 18% 12%,
+                    rgba(235,242,255,0.54) 0%,
+                    rgba(235,242,255,0.54) 58%,
                     transparent 72%
                 ),
                 radial-gradient(
-                    ellipse 0.70px 12px at 56% 38%,
-                    rgba(235,242,255,0.48) 0%,
-                    rgba(235,242,255,0.48) 58%,
+                    ellipse 0.70px 16px at 56% 38%,
+                    rgba(235,242,255,0.50) 0%,
+                    rgba(235,242,255,0.50) 58%,
                     transparent 72%
                 ),
                 radial-gradient(
-                    ellipse 0.65px 11px at 82% 69%,
+                    ellipse 0.65px 15px at 82% 69%,
+                    rgba(235,242,255,0.44) 0%,
+                    rgba(235,242,255,0.44) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.65px 15px at 36% 78%,
                     rgba(235,242,255,0.42) 0%,
                     rgba(235,242,255,0.42) 58%,
                     transparent 72%
                 );
 
             background-size:
-                165px 220px,
-                210px 280px,
-                260px 340px;
+                135px 180px,
+                175px 230px,
+                220px 285px,
+                260px 335px;
 
             background-position:
-                0px -240px,
-                70px -310px,
-                140px -380px;
+                0px -210px,
+                60px -270px,
+                125px -330px,
+                190px -390px;
 
             animation: shortDrizzleLayerOne 1.18s linear infinite;
         }
@@ -821,16 +829,18 @@ def apply_dark_mode_weather_effect():
         @keyframes shortDrizzleLayerOne {
             0% {
                 background-position:
-                    0px -240px,
-                    70px -310px,
-                    140px -380px;
+                    0px -210px,
+                    60px -270px,
+                    125px -330px,
+                    190px -390px;
             }
 
             100% {
                 background-position:
-                    -65px 240px,
-                    -42px 310px,
-                    25px 380px;
+                    -65px 210px,
+                    -42px 270px,
+                    25px 330px,
+                    90px 390px;
             }
         }
 
@@ -843,30 +853,38 @@ def apply_dark_mode_weather_effect():
             height: 124vh !important;
             pointer-events: none !important;
             z-index: 2147482999 !important;
-            opacity: 0.72 !important;
+            opacity: 0.76 !important;
             transform: rotate(-8deg);
 
             background-image:
                 radial-gradient(
-                    ellipse 0.65px 11px at 28% 22%,
-                    rgba(235,242,255,0.42) 0%,
-                    rgba(235,242,255,0.42) 58%,
+                    ellipse 0.65px 15px at 28% 22%,
+                    rgba(235,242,255,0.44) 0%,
+                    rgba(235,242,255,0.44) 58%,
                     transparent 72%
                 ),
                 radial-gradient(
-                    ellipse 0.60px 10px at 74% 58%,
+                    ellipse 0.60px 14px at 74% 58%,
+                    rgba(235,242,255,0.38) 0%,
+                    rgba(235,242,255,0.38) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.60px 14px at 48% 86%,
                     rgba(235,242,255,0.36) 0%,
                     rgba(235,242,255,0.36) 58%,
                     transparent 72%
                 );
 
             background-size:
-                230px 300px,
-                310px 410px;
+                190px 250px,
+                250px 330px,
+                315px 420px;
 
             background-position:
-                55px -330px,
-                155px -430px;
+                55px -290px,
+                155px -390px,
+                235px -480px;
 
             animation: shortDrizzleLayerTwo 1.45s linear infinite;
         }
@@ -874,14 +892,16 @@ def apply_dark_mode_weather_effect():
         @keyframes shortDrizzleLayerTwo {
             0% {
                 background-position:
-                    55px -330px,
-                    155px -430px;
+                    55px -290px,
+                    155px -390px,
+                    235px -480px;
             }
 
             100% {
                 background-position:
-                    -55px 330px,
-                    40px 430px;
+                    -55px 290px,
+                    40px 390px,
+                    120px 480px;
             }
         }
 
