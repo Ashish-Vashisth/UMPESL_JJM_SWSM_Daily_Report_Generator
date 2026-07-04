@@ -754,9 +754,9 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds fine full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds full-screen fine drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Droplet length reduced and count increased.
+    Drop count reduced and drop length reduced.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
@@ -776,151 +776,112 @@ def apply_dark_mode_weather_effect():
         [data-testid="stAppViewContainer"]::before {
             content: "";
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            top: -12vh !important;
+            left: -12vw !important;
+            width: 124vw !important;
+            height: 124vh !important;
             pointer-events: none !important;
             z-index: 2147483000 !important;
-            opacity: 0.92 !important;
+            opacity: 0.90 !important;
+            transform: rotate(-8deg);
 
             background-image:
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.45%,
-                    rgba(235,242,255,0.46) 49.70%,
-                    rgba(235,242,255,0.46) 49.92%,
-                    transparent 50.18%,
-                    transparent 100%
+                radial-gradient(
+                    ellipse 0.70px 13px at 18% 12%,
+                    rgba(235,242,255,0.52) 0%,
+                    rgba(235,242,255,0.52) 58%,
+                    transparent 72%
                 ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.35%,
-                    rgba(235,242,255,0.42) 49.60%,
-                    rgba(235,242,255,0.42) 49.82%,
-                    transparent 50.08%,
-                    transparent 100%
+                radial-gradient(
+                    ellipse 0.70px 12px at 56% 38%,
+                    rgba(235,242,255,0.48) 0%,
+                    rgba(235,242,255,0.48) 58%,
+                    transparent 72%
                 ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.50%,
-                    rgba(235,242,255,0.38) 49.75%,
-                    rgba(235,242,255,0.38) 49.97%,
-                    transparent 50.23%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.55%,
-                    rgba(235,242,255,0.34) 49.80%,
-                    rgba(235,242,255,0.34) 50.02%,
-                    transparent 50.28%,
-                    transparent 100%
+                radial-gradient(
+                    ellipse 0.65px 11px at 82% 69%,
+                    rgba(235,242,255,0.42) 0%,
+                    rgba(235,242,255,0.42) 58%,
+                    transparent 72%
                 );
 
             background-size:
-                72px 115px,
-                96px 145px,
-                126px 175px,
-                165px 215px;
+                165px 220px,
+                210px 280px,
+                260px 340px;
 
             background-position:
-                0px -130px,
-                38px -160px,
-                82px -190px,
-                130px -230px;
+                0px -240px,
+                70px -310px,
+                140px -380px;
 
-            animation: fineDrizzleFullScreen 0.95s linear infinite;
+            animation: shortDrizzleLayerOne 1.18s linear infinite;
         }
 
-        @keyframes fineDrizzleFullScreen {
+        @keyframes shortDrizzleLayerOne {
             0% {
                 background-position:
-                    0px -130px,
-                    38px -160px,
-                    82px -190px,
-                    130px -230px;
+                    0px -240px,
+                    70px -310px,
+                    140px -380px;
             }
 
             100% {
                 background-position:
-                    -54px 130px,
-                    -42px 160px,
-                    8px 190px,
-                    64px 230px;
+                    -65px 240px,
+                    -42px 310px,
+                    25px 380px;
             }
         }
 
         body::before {
             content: "";
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            top: -12vh !important;
+            left: -12vw !important;
+            width: 124vw !important;
+            height: 124vh !important;
             pointer-events: none !important;
             z-index: 2147482999 !important;
-            opacity: 0.78 !important;
+            opacity: 0.72 !important;
+            transform: rotate(-8deg);
 
             background-image:
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.45%,
-                    rgba(235,242,255,0.38) 49.70%,
-                    rgba(235,242,255,0.38) 49.92%,
-                    transparent 50.18%,
-                    transparent 100%
+                radial-gradient(
+                    ellipse 0.65px 11px at 28% 22%,
+                    rgba(235,242,255,0.42) 0%,
+                    rgba(235,242,255,0.42) 58%,
+                    transparent 72%
                 ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.55%,
-                    rgba(235,242,255,0.34) 49.80%,
-                    rgba(235,242,255,0.34) 50.02%,
-                    transparent 50.28%,
-                    transparent 100%
-                ),
-                linear-gradient(
-                    105deg,
-                    transparent 0%,
-                    transparent 49.35%,
-                    rgba(235,242,255,0.32) 49.60%,
-                    rgba(235,242,255,0.32) 49.82%,
-                    transparent 50.08%,
-                    transparent 100%
+                radial-gradient(
+                    ellipse 0.60px 10px at 74% 58%,
+                    rgba(235,242,255,0.36) 0%,
+                    rgba(235,242,255,0.36) 58%,
+                    transparent 72%
                 );
 
             background-size:
-                58px 95px,
-                84px 125px,
-                112px 155px;
+                230px 300px,
+                310px 410px;
 
             background-position:
-                22px -105px,
-                64px -135px,
-                108px -170px;
+                55px -330px,
+                155px -430px;
 
-            animation: fineDrizzleFullScreenSecond 0.82s linear infinite;
+            animation: shortDrizzleLayerTwo 1.45s linear infinite;
         }
 
-        @keyframes fineDrizzleFullScreenSecond {
+        @keyframes shortDrizzleLayerTwo {
             0% {
                 background-position:
-                    22px -105px,
-                    64px -135px,
-                    108px -170px;
+                    55px -330px,
+                    155px -430px;
             }
 
             100% {
                 background-position:
-                    -42px 105px,
-                    -26px 135px,
-                    22px 170px;
+                    -55px 330px,
+                    40px 430px;
             }
         }
 
