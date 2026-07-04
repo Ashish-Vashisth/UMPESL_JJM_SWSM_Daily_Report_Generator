@@ -472,162 +472,110 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds natural drizzle rain + bright thunderstorm flash only in Dark mode.
+    Adds full-screen natural rain + bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Rain now covers the full visible page while scrolling.
+    Rain remains visible across the full viewport while scrolling.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
-    rain_drops = [
-        (2, -0.2, 2.6, 58, 0.38, -80),
-        (4, -1.1, 2.4, 66, 0.40, -88),
-        (6, -1.7, 2.5, 72, 0.44, -90),
-        (8, -0.8, 2.7, 54, 0.36, -78),
-        (10, -2.4, 2.6, 64, 0.42, -84),
-        (12, -3.1, 2.9, 46, 0.34, -75),
-        (14, -1.5, 2.5, 60, 0.38, -82),
-        (16, -2.2, 2.6, 62, 0.39, -82),
-        (18, -0.9, 2.3, 64, 0.42, -85),
-        (20, -2.8, 2.7, 70, 0.44, -90),
-        (22, -3.6, 2.5, 54, 0.36, -78),
-        (24, -2.4, 2.7, 82, 0.48, -95),
-        (26, -4.0, 3.0, 42, 0.32, -70),
-        (28, -1.2, 2.4, 76, 0.46, -88),
-        (30, -2.8, 2.6, 60, 0.38, -82),
-        (32, -3.5, 2.8, 52, 0.36, -78),
-        (34, -0.6, 2.3, 88, 0.50, -96),
-        (36, -1.9, 2.6, 68, 0.42, -86),
-        (38, -2.9, 3.0, 48, 0.34, -72),
-        (40, -4.3, 2.7, 56, 0.36, -80),
-        (42, -1.5, 2.5, 70, 0.44, -86),
-        (44, -3.8, 2.4, 58, 0.38, -82),
-        (46, -2.6, 2.8, 74, 0.42, -90),
-        (48, -0.4, 2.8, 84, 0.50, -94),
-        (50, -1.8, 2.5, 64, 0.40, -84),
-        (52, -2.2, 3.1, 50, 0.34, -76),
-        (54, -4.6, 2.6, 66, 0.42, -84),
-        (56, -3.2, 2.9, 52, 0.36, -78),
-        (58, -0.7, 2.5, 76, 0.44, -88),
-        (60, -1.4, 2.4, 62, 0.39, -82),
-        (62, -2.6, 2.8, 70, 0.42, -90),
-        (64, -3.7, 2.6, 58, 0.38, -82),
-        (66, -1.0, 2.5, 82, 0.48, -94),
-        (68, -2.1, 2.7, 54, 0.36, -78),
-        (70, -3.3, 2.8, 66, 0.42, -86),
-        (72, -0.5, 2.5, 74, 0.44, -90),
-        (74, -1.9, 2.6, 60, 0.38, -82),
-        (76, -2.7, 2.9, 52, 0.36, -76),
-        (78, -3.5, 2.5, 68, 0.42, -86),
-        (80, -0.9, 2.4, 84, 0.50, -94),
-        (82, -1.6, 2.6, 64, 0.40, -84),
-        (84, -2.8, 3.0, 48, 0.34, -72),
-        (86, -4.2, 2.7, 56, 0.36, -80),
-        (88, -1.3, 2.5, 70, 0.44, -86),
-        (90, -2.4, 2.8, 58, 0.38, -82),
-        (92, -3.9, 2.6, 66, 0.42, -84),
-        (94, -0.3, 2.5, 78, 0.46, -90),
-        (96, -1.8, 2.7, 60, 0.38, -82),
-        (98, -2.9, 2.9, 52, 0.36, -78),
-        (5, -4.8, 3.1, 38, 0.30, -64),
-        (9, -5.2, 3.0, 44, 0.32, -68),
-        (13, -4.4, 2.9, 44, 0.32, -68),
-        (17, -5.8, 3.2, 46, 0.31, -72),
-        (21, -6.2, 3.1, 50, 0.35, -74),
-        (25, -5.5, 2.9, 44, 0.34, -68),
-        (29, -4.9, 3.2, 40, 0.31, -66),
-        (33, -6.0, 3.3, 48, 0.34, -72),
-        (37, -5.7, 2.8, 54, 0.38, -80),
-        (43, -6.4, 3.1, 46, 0.33, -70),
-        (51, -5.2, 3.0, 42, 0.32, -68),
-        (59, -4.7, 2.9, 48, 0.34, -72),
-        (67, -6.1, 3.2, 52, 0.35, -76),
-        (75, -5.4, 2.8, 44, 0.32, -70),
-        (83, -6.5, 3.1, 50, 0.34, -74),
-        (91, -5.9, 3.0, 46, 0.33, -70),
-    ]
-
-    drops_html = ""
-    for left, delay, duration, length, opacity, drift in rain_drops:
-        drops_html += (
-            f'<span class="storm-rain-drop" '
-            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
-            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
-        )
-
     st.markdown(
-        f"""
+        """
         <style>
         /* =====================================================
-           FULL SCREEN RAIN LAYER
-           Covers complete visible viewport even after scrolling
+           FULL VIEWPORT RAIN LAYER
+           Covers entire visible screen, including after scrolling
            ===================================================== */
 
-        .storm-rain-layer {{
+        body::before {
+            content: "";
             position: fixed !important;
-            top: 0 !important;
+            top: -160px !important;
             left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 2px !important;
+            height: 72px !important;
             pointer-events: none !important;
-            overflow: hidden !important;
-            z-index: 999999 !important;
-        }}
+            z-index: 2147483000 !important;
+            opacity: 1 !important;
+            border-radius: 999px !important;
 
-        .storm-rain-drop {{
-            position: absolute;
-            top: -140px;
-            left: var(--left);
-            width: 1.35px;
-            height: var(--length);
-            opacity: 0;
-            border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
-                rgba(220,230,245,0.78),
+                rgba(220,230,245,0.62),
                 rgba(220,230,245,0.00)
-            );
-            filter: blur(0.10px);
+            ) !important;
+
+            filter: blur(0.15px);
             transform: rotate(-8deg);
-            animation: naturalFastRain var(--duration) linear infinite;
-            animation-delay: var(--delay);
-        }}
 
-        @keyframes naturalFastRain {{
-            0% {{
+            box-shadow:
+                2vw 3vh 0 rgba(220,230,245,0.32),
+                6vw 18vh 0 rgba(220,230,245,0.40),
+                10vw 34vh 0 rgba(220,230,245,0.34),
+                14vw 8vh 0 rgba(220,230,245,0.38),
+                18vw 48vh 0 rgba(220,230,245,0.42),
+                22vw 25vh 0 rgba(220,230,245,0.36),
+                26vw 62vh 0 rgba(220,230,245,0.44),
+                30vw 12vh 0 rgba(220,230,245,0.34),
+                34vw 39vh 0 rgba(220,230,245,0.42),
+                38vw 70vh 0 rgba(220,230,245,0.36),
+                42vw 21vh 0 rgba(220,230,245,0.40),
+                46vw 54vh 0 rgba(220,230,245,0.46),
+                50vw 7vh 0 rgba(220,230,245,0.34),
+                54vw 31vh 0 rgba(220,230,245,0.42),
+                58vw 66vh 0 rgba(220,230,245,0.36),
+                62vw 15vh 0 rgba(220,230,245,0.44),
+                66vw 43vh 0 rgba(220,230,245,0.38),
+                70vw 75vh 0 rgba(220,230,245,0.46),
+                74vw 27vh 0 rgba(220,230,245,0.40),
+                78vw 58vh 0 rgba(220,230,245,0.34),
+                82vw 11vh 0 rgba(220,230,245,0.42),
+                86vw 36vh 0 rgba(220,230,245,0.46),
+                90vw 68vh 0 rgba(220,230,245,0.38),
+                94vw 22vh 0 rgba(220,230,245,0.44),
+                98vw 51vh 0 rgba(220,230,245,0.36),
+
+                5vw 82vh 0 rgba(220,230,245,0.34),
+                12vw 72vh 0 rgba(220,230,245,0.40),
+                19vw 90vh 0 rgba(220,230,245,0.36),
+                27vw 85vh 0 rgba(220,230,245,0.42),
+                35vw 93vh 0 rgba(220,230,245,0.34),
+                48vw 88vh 0 rgba(220,230,245,0.44),
+                60vw 94vh 0 rgba(220,230,245,0.38),
+                73vw 86vh 0 rgba(220,230,245,0.42),
+                88vw 92vh 0 rgba(220,230,245,0.36);
+
+            animation: fullViewportRain 1.55s linear infinite;
+        }
+
+        @keyframes fullViewportRain {
+            0% {
                 transform: translate3d(0, -24vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
+            }
 
-            7% {{
-                opacity: var(--opacity);
-            }}
-
-            84% {{
-                opacity: var(--opacity);
-            }}
-
-            100% {{
-                transform: translate3d(var(--drift), 130vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
-        }}
+            100% {
+                transform: translate3d(-90px, 135vh, 0) rotate(-8deg);
+            }
+        }
 
         /* =====================================================
-           BRIGHT THUNDERSTORM FLASH - UNCHANGED
+           BRIGHT THUNDERSTORM FLASH
+           Kept bright and full-screen
            ===================================================== */
 
-        .storm-lightning-flash {{
+        [data-testid="stAppViewContainer"]::after {
+            content: "";
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             pointer-events: none !important;
-            z-index: 1000000 !important;
+            z-index: 2147483001 !important;
             opacity: 0;
             mix-blend-mode: screen;
+
             background:
                 radial-gradient(
                     circle at 68% 7%,
@@ -642,57 +590,54 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.12),
                     rgba(255,255,255,0.00)
                 );
+
             animation: brightStormFlash 6.2s infinite;
-        }}
+        }
 
-        @keyframes brightStormFlash {{
-            0%, 62%, 100% {{
+        @keyframes brightStormFlash {
+            0%, 62%, 100% {
                 opacity: 0;
-            }}
+            }
 
-            63% {{
+            63% {
                 opacity: 1;
-            }}
+            }
 
-            64% {{
+            64% {
                 opacity: 0.18;
-            }}
+            }
 
-            65% {{
+            65% {
                 opacity: 0.95;
-            }}
+            }
 
-            66% {{
+            66% {
                 opacity: 0.12;
-            }}
+            }
 
-            67% {{
+            67% {
                 opacity: 0.78;
-            }}
+            }
 
-            68%, 100% {{
+            68%, 100% {
                 opacity: 0;
-            }}
-        }}
+            }
+        }
 
-        /* Keep app content clickable */
-        [data-testid="stAppViewContainer"] .block-container {{
-            position: relative !important;
-            z-index: 10 !important;
-        }}
-
-        /* Keep top controls above everything */
+        /* Keep top controls clickable and above everything */
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {{
-            z-index: 10000000 !important;
-        }}
-        </style>
+        .st-key-dark_bright_toggle_btn button {
+            position: relative !important;
+            z-index: 2147483647 !important;
+        }
 
-        <div class="storm-rain-layer">
-            {drops_html}
-        </div>
-        <div class="storm-lightning-flash"></div>
+        /* Rain should never block clicking */
+        body::before,
+        [data-testid="stAppViewContainer"]::after {
+            pointer-events: none !important;
+        }
+        </style>
         """,
         unsafe_allow_html=True
     )
