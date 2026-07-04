@@ -754,183 +754,135 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds visible full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
+    rain_drops = []
+
+    left_value = 1.0
+    top_value = -10.0
+    delay_value = 0.0
+
+    duration_values = [1.65, 1.72, 1.80, 1.88, 1.96, 2.04]
+    length_values = [42, 46, 50, 54, 58]
+    opacity_values = [0.42, 0.48, 0.54, 0.60]
+    drift_values = [-58, -66, -74, -82, -90]
+
+    duration_index = 0
+    length_index = 0
+    opacity_index = 0
+    drift_index = 0
+
+    for item in range(220):
+        rain_drops.append(
+            (
+                round(left_value, 2),
+                round(top_value, 2),
+                round(delay_value, 2),
+                duration_values[duration_index],
+                length_values[length_index],
+                opacity_values[opacity_index],
+                drift_values[drift_index],
+            )
+        )
+
+        left_value = left_value + 4.3
+        if left_value > 100:
+            left_value = left_value - 100
+
+        top_value = top_value + 7.2
+        if top_value > 110:
+            top_value = top_value - 120
+
+        delay_value = delay_value - 0.09
+        if delay_value < -5.5:
+            delay_value = delay_value + 5.5
+
+        duration_index = duration_index + 1
+        if duration_index >= len(duration_values):
+            duration_index = 0
+
+        length_index = length_index + 1
+        if length_index >= len(length_values):
+            length_index = 0
+
+        opacity_index = opacity_index + 1
+        if opacity_index >= len(opacity_values):
+            opacity_index = 0
+
+        drift_index = drift_index + 1
+        if drift_index >= len(drift_values):
+            drift_index = 0
+
+    drops_html = ""
+
+    for left, top, delay, duration, length, opacity, drift in rain_drops:
+        drops_html += (
+            f'<span class="storm-rain-drop" '
+            f'style="--left:{left}vw; --top:{top}vh; --delay:{delay}s; '
+            f'--duration:{duration}s; --length:{length}px; '
+            f'--opacity:{opacity}; --drift:{drift}px;"></span>'
+        )
+
     st.markdown(
-        """
+        f"""
         <style>
-        body::before {
-            content: "";
+        .storm-rain-layer {{
             position: fixed !important;
-            top: -120px !important;
+            top: 0 !important;
             left: 0 !important;
-            width: 1.15px !important;
-            height: 52px !important;
+            width: 100vw !important;
+            height: 100vh !important;
             pointer-events: none !important;
+            overflow: hidden !important;
             z-index: 2147483000 !important;
-            opacity: 1 !important;
-            border-radius: 999px !important;
+        }}
+
+        .storm-rain-drop {{
+            position: absolute;
+            top: var(--top);
+            left: var(--left);
+            width: 1.15px;
+            height: var(--length);
+            opacity: 0;
+            border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(235,242,255,0.00),
-                rgba(235,242,255,0.72),
+                rgba(235,242,255,0.82),
                 rgba(235,242,255,0.00)
-            ) !important;
+            );
             filter: blur(0.05px);
             transform: rotate(-8deg);
+            animation: fullScreenFineRain var(--duration) linear infinite;
+            animation-delay: var(--delay);
+        }}
 
-            box-shadow:
-                1vw 4vh 0 rgba(235,242,255,0.42),
-                5vw 14vh 0 rgba(235,242,255,0.44),
-                9vw 24vh 0 rgba(235,242,255,0.40),
-                13vw 34vh 0 rgba(235,242,255,0.46),
-                17vw 44vh 0 rgba(235,242,255,0.42),
-                21vw 54vh 0 rgba(235,242,255,0.44),
-                25vw 64vh 0 rgba(235,242,255,0.40),
-                29vw 74vh 0 rgba(235,242,255,0.46),
-                33vw 84vh 0 rgba(235,242,255,0.42),
-                37vw 94vh 0 rgba(235,242,255,0.44),
-
-                41vw 8vh 0 rgba(235,242,255,0.42),
-                45vw 18vh 0 rgba(235,242,255,0.46),
-                49vw 28vh 0 rgba(235,242,255,0.40),
-                53vw 38vh 0 rgba(235,242,255,0.44),
-                57vw 48vh 0 rgba(235,242,255,0.42),
-                61vw 58vh 0 rgba(235,242,255,0.46),
-                65vw 68vh 0 rgba(235,242,255,0.40),
-                69vw 78vh 0 rgba(235,242,255,0.44),
-                73vw 88vh 0 rgba(235,242,255,0.42),
-                77vw 98vh 0 rgba(235,242,255,0.46),
-
-                81vw 12vh 0 rgba(235,242,255,0.42),
-                85vw 22vh 0 rgba(235,242,255,0.44),
-                89vw 32vh 0 rgba(235,242,255,0.40),
-                93vw 42vh 0 rgba(235,242,255,0.46),
-                97vw 52vh 0 rgba(235,242,255,0.42),
-
-                3vw 62vh 0 rgba(235,242,255,0.44),
-                7vw 72vh 0 rgba(235,242,255,0.40),
-                11vw 82vh 0 rgba(235,242,255,0.46),
-                15vw 92vh 0 rgba(235,242,255,0.42),
-                19vw 102vh 0 rgba(235,242,255,0.44),
-
-                23vw 2vh 0 rgba(235,242,255,0.42),
-                27vw 12vh 0 rgba(235,242,255,0.46),
-                31vw 22vh 0 rgba(235,242,255,0.40),
-                35vw 32vh 0 rgba(235,242,255,0.44),
-                39vw 42vh 0 rgba(235,242,255,0.42),
-                43vw 52vh 0 rgba(235,242,255,0.46),
-                47vw 62vh 0 rgba(235,242,255,0.40),
-                51vw 72vh 0 rgba(235,242,255,0.44),
-                55vw 82vh 0 rgba(235,242,255,0.42),
-                59vw 92vh 0 rgba(235,242,255,0.46),
-
-                63vw 6vh 0 rgba(235,242,255,0.42),
-                67vw 16vh 0 rgba(235,242,255,0.44),
-                71vw 26vh 0 rgba(235,242,255,0.40),
-                75vw 36vh 0 rgba(235,242,255,0.46),
-                79vw 46vh 0 rgba(235,242,255,0.42),
-                83vw 56vh 0 rgba(235,242,255,0.44),
-                87vw 66vh 0 rgba(235,242,255,0.40),
-                91vw 76vh 0 rgba(235,242,255,0.46),
-                95vw 86vh 0 rgba(235,242,255,0.42),
-                99vw 96vh 0 rgba(235,242,255,0.44);
-
-            animation: rainLayerOne 1.55s linear infinite;
-        }
-
-        @keyframes rainLayerOne {
-            0% {
+        @keyframes fullScreenFineRain {{
+            0% {{
                 transform: translate3d(0, -30vh, 0) rotate(-8deg);
-            }
+                opacity: 0;
+            }}
 
-            100% {
-                transform: translate3d(-90px, 135vh, 0) rotate(-8deg);
-            }
-        }
+            8% {{
+                opacity: var(--opacity);
+            }}
 
-        html::before {
-            content: "";
-            position: fixed !important;
-            top: -130px !important;
-            left: 0 !important;
-            width: 1.05px !important;
-            height: 46px !important;
-            pointer-events: none !important;
-            z-index: 2147482999 !important;
-            opacity: 1 !important;
-            border-radius: 999px !important;
-            background: linear-gradient(
-                to bottom,
-                rgba(235,242,255,0.00),
-                rgba(235,242,255,0.60),
-                rgba(235,242,255,0.00)
-            ) !important;
-            filter: blur(0.04px);
-            transform: rotate(-8deg);
+            86% {{
+                opacity: var(--opacity);
+            }}
 
-            box-shadow:
-                2vw 10vh 0 rgba(235,242,255,0.34),
-                6vw 20vh 0 rgba(235,242,255,0.36),
-                10vw 30vh 0 rgba(235,242,255,0.32),
-                14vw 40vh 0 rgba(235,242,255,0.38),
-                18vw 50vh 0 rgba(235,242,255,0.34),
-                22vw 60vh 0 rgba(235,242,255,0.36),
-                26vw 70vh 0 rgba(235,242,255,0.32),
-                30vw 80vh 0 rgba(235,242,255,0.38),
-                34vw 90vh 0 rgba(235,242,255,0.34),
-                38vw 100vh 0 rgba(235,242,255,0.36),
+            100% {{
+                transform: translate3d(var(--drift), 135vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
+        }}
 
-                42vw 14vh 0 rgba(235,242,255,0.34),
-                46vw 24vh 0 rgba(235,242,255,0.38),
-                50vw 34vh 0 rgba(235,242,255,0.32),
-                54vw 44vh 0 rgba(235,242,255,0.36),
-                58vw 54vh 0 rgba(235,242,255,0.34),
-                62vw 64vh 0 rgba(235,242,255,0.38),
-                66vw 74vh 0 rgba(235,242,255,0.32),
-                70vw 84vh 0 rgba(235,242,255,0.36),
-                74vw 94vh 0 rgba(235,242,255,0.34),
-
-                78vw 8vh 0 rgba(235,242,255,0.38),
-                82vw 18vh 0 rgba(235,242,255,0.34),
-                86vw 28vh 0 rgba(235,242,255,0.36),
-                90vw 38vh 0 rgba(235,242,255,0.32),
-                94vw 48vh 0 rgba(235,242,255,0.38),
-                98vw 58vh 0 rgba(235,242,255,0.34),
-
-                4vw 68vh 0 rgba(235,242,255,0.36),
-                12vw 78vh 0 rgba(235,242,255,0.32),
-                20vw 88vh 0 rgba(235,242,255,0.38),
-                28vw 98vh 0 rgba(235,242,255,0.34),
-                36vw 6vh 0 rgba(235,242,255,0.36),
-                44vw 16vh 0 rgba(235,242,255,0.32),
-                52vw 26vh 0 rgba(235,242,255,0.38),
-                60vw 36vh 0 rgba(235,242,255,0.34),
-                68vw 46vh 0 rgba(235,242,255,0.36),
-                76vw 56vh 0 rgba(235,242,255,0.32),
-                84vw 66vh 0 rgba(235,242,255,0.38),
-                92vw 76vh 0 rgba(235,242,255,0.34);
-
-            animation: rainLayerTwo 1.85s linear infinite;
-        }
-
-        @keyframes rainLayerTwo {
-            0% {
-                transform: translate3d(0, -35vh, 0) rotate(-8deg);
-            }
-
-            100% {
-                transform: translate3d(-82px, 140vh, 0) rotate(-8deg);
-            }
-        }
-
-        body::after {
-            content: "";
+        .storm-lightning-flash {{
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
@@ -939,7 +891,6 @@ def apply_dark_mode_weather_effect():
             z-index: 2147483001 !important;
             opacity: 0;
             mix-blend-mode: screen;
-
             background:
                 radial-gradient(
                     circle at 68% 7%,
@@ -954,52 +905,62 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.12),
                     rgba(255,255,255,0.00)
                 );
-
             animation: brightStormFlash 6.2s infinite;
-        }
+        }}
 
-        @keyframes brightStormFlash {
-            0%, 62%, 100% {
+        @keyframes brightStormFlash {{
+            0%, 62%, 100% {{
                 opacity: 0;
-            }
+            }}
 
-            63% {
+            63% {{
                 opacity: 1;
-            }
+            }}
 
-            64% {
+            64% {{
                 opacity: 0.18;
-            }
+            }}
 
-            65% {
+            65% {{
                 opacity: 0.95;
-            }
+            }}
 
-            66% {
+            66% {{
                 opacity: 0.12;
-            }
+            }}
 
-            67% {
+            67% {{
                 opacity: 0.78;
-            }
+            }}
 
-            68%, 100% {
+            68%, 100% {{
                 opacity: 0;
-            }
-        }
-
-        body::before,
-        body::after,
-        html::before {
-            pointer-events: none !important;
-        }
+            }}
+        }}
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {
+        .st-key-dark_bright_toggle_btn button,
+        .st-key-theme_dark_btn,
+        .st-key-theme_bright_btn,
+        .st-key-theme_rain_btn,
+        .st-key-theme_dark_btn button,
+        .st-key-theme_bright_btn button,
+        .st-key-theme_rain_btn button {{
             z-index: 2147483647 !important;
-        }
+        }}
+
+        .storm-rain-layer,
+        .storm-rain-drop,
+        .storm-lightning-flash {{
+            pointer-events: none !important;
+        }}
         </style>
+
+        <div class="storm-rain-layer">
+            {drops_html}
+        </div>
+        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
