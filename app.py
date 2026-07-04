@@ -472,201 +472,174 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds sparse long drizzle rain + brighter thunderstorm flash only in Dark mode.
+    Adds sparse natural drizzle rain + bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
+    rain_drops = [
+        (4, -0.2, 5.2, 58, 0.24, -80),
+        (9, -1.7, 4.8, 72, 0.30, -90),
+        (15, -3.1, 5.8, 46, 0.20, -75),
+        (21, -0.9, 4.6, 64, 0.28, -85),
+        (28, -2.4, 5.4, 82, 0.36, -95),
+        (34, -4.0, 6.1, 42, 0.18, -70),
+        (41, -1.2, 4.9, 76, 0.32, -88),
+        (48, -3.5, 5.6, 52, 0.22, -78),
+        (55, -0.6, 4.7, 88, 0.38, -96),
+        (62, -2.9, 6.0, 48, 0.20, -72),
+        (69, -1.5, 5.1, 70, 0.30, -86),
+        (76, -3.8, 4.8, 58, 0.24, -82),
+        (83, -0.4, 5.7, 84, 0.36, -94),
+        (90, -2.2, 6.2, 50, 0.20, -76),
+        (96, -4.6, 5.3, 66, 0.28, -84),
+        (18, -5.0, 6.4, 38, 0.16, -64),
+        (36, -5.5, 5.9, 44, 0.18, -68),
+        (58, -4.9, 6.5, 40, 0.17, -66),
+        (72, -5.7, 5.6, 54, 0.22, -80),
+    ]
+
+    drops_html = ""
+    for i, (left, delay, duration, length, opacity, drift) in enumerate(rain_drops):
+        drops_html += (
+            f'<span class="storm-rain-drop" '
+            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
+            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
+        )
+
     st.markdown(
-        """
+        f"""
         <style>
         /* =====================================================
-           SPARSE LONG DRIZZLE RAIN - DARK MODE ONLY
-           Few long slanted drops like reference image
+           NATURAL SPARSE DRIZZLE RAIN
            ===================================================== */
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: -180px;
-            left: 0;
-            width: 100vw;
-            height: calc(100vh + 360px);
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.42;
-
-            background-image:
-                linear-gradient(
-                    100deg,
-                    rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 48%,
-                    rgba(190,205,225,0.40) 49%,
-                    rgba(190,205,225,0.40) 50%,
-                    rgba(255,255,255,0.00) 51%,
-                    rgba(255,255,255,0.00) 100%
-                ),
-                linear-gradient(
-                    100deg,
-                    rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 48%,
-                    rgba(180,195,215,0.34) 49%,
-                    rgba(180,195,215,0.34) 50%,
-                    rgba(255,255,255,0.00) 51%,
-                    rgba(255,255,255,0.00) 100%
-                ),
-                linear-gradient(
-                    100deg,
-                    rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 48%,
-                    rgba(220,230,245,0.28) 49%,
-                    rgba(220,230,245,0.28) 50%,
-                    rgba(255,255,255,0.00) 51%,
-                    rgba(255,255,255,0.00) 100%
-                );
-
-            background-size:
-                210px 360px,
-                290px 460px,
-                380px 560px;
-
-            background-position:
-                20px -260px,
-                150px -420px,
-                320px -520px;
-
-            animation: sparseDrizzleMove 2.4s linear infinite;
-        }
-
-        @keyframes sparseDrizzleMove {
-            0% {
-                background-position:
-                    20px -300px,
-                    150px -460px,
-                    320px -600px;
-            }
-
-            100% {
-                background-position:
-                    -70px 300px,
-                    30px 460px,
-                    170px 600px;
-            }
-        }
-
-        /* =====================================================
-           EXTRA FEW RANDOM-LOOKING LONG DROPS
-           ===================================================== */
-
-        [data-testid="stAppViewContainer"]::before {
-            content: "";
+        .storm-rain-layer {{
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 9998;
-            opacity: 0.38;
+            overflow: hidden;
+            z-index: 3;
+        }}
 
-            background-image:
-                linear-gradient(
-                    100deg,
-                    rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 48%,
-                    rgba(190,205,225,0.42) 49%,
-                    rgba(190,205,225,0.42) 50%,
-                    rgba(255,255,255,0.00) 51%,
-                    rgba(255,255,255,0.00) 100%
-                );
+        .storm-rain-drop {{
+            position: absolute;
+            top: -120px;
+            left: var(--left);
+            width: 1.4px;
+            height: var(--length);
+            opacity: 0;
+            border-radius: 999px;
+            background: linear-gradient(
+                to bottom,
+                rgba(220,230,245,0.00),
+                rgba(220,230,245,0.55),
+                rgba(220,230,245,0.00)
+            );
+            filter: blur(0.15px);
+            transform: rotate(-8deg);
+            animation: naturalSparseRain var(--duration) linear infinite;
+            animation-delay: var(--delay);
+        }}
 
-            background-size: 430px 620px;
-            background-position: 80px -520px;
-            animation: sparseDrizzleMoveSecond 3.2s linear infinite;
-        }
+        @keyframes naturalSparseRain {{
+            0% {{
+                transform: translate3d(0, -18vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
 
-        @keyframes sparseDrizzleMoveSecond {
-            0% {
-                background-position: 80px -620px;
-            }
+            8% {{
+                opacity: var(--opacity);
+            }}
 
-            100% {
-                background-position: -120px 620px;
-            }
-        }
+            78% {{
+                opacity: var(--opacity);
+            }}
+
+            100% {{
+                transform: translate3d(var(--drift), 120vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
+        }}
 
         /* =====================================================
-           BRIGHTER THUNDER / LIGHTNING FLASH
+           BRIGHT THUNDERSTORM FLASH
            ===================================================== */
 
-        body::after {
-            content: "";
+        .storm-lightning-flash {{
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 9999;
-
-            background:
-                radial-gradient(
-                    circle at 72% 6%,
-                    rgba(255,255,255,1.00),
-                    rgba(255,255,255,0.62) 14%,
-                    rgba(255,255,255,0.24) 30%,
-                    rgba(255,255,255,0.00) 55%
-                ),
-                linear-gradient(
-                    rgba(255,255,255,0.34),
-                    rgba(255,255,255,0.10),
-                    rgba(255,255,255,0.00)
-                );
-
+            z-index: 4;
             opacity: 0;
             mix-blend-mode: screen;
-            animation: strongLightningFlash 5.5s infinite;
-        }
+            background:
+                radial-gradient(
+                    circle at 68% 7%,
+                    rgba(255,255,255,1.00),
+                    rgba(255,255,255,0.72) 12%,
+                    rgba(255,255,255,0.30) 26%,
+                    rgba(255,255,255,0.08) 42%,
+                    rgba(255,255,255,0.00) 62%
+                ),
+                linear-gradient(
+                    rgba(255,255,255,0.42),
+                    rgba(255,255,255,0.12),
+                    rgba(255,255,255,0.00)
+                );
+            animation: brightStormFlash 6.2s infinite;
+        }}
 
-        @keyframes strongLightningFlash {
-            0%, 64%, 100% {
+        @keyframes brightStormFlash {{
+            0%, 62%, 100% {{
                 opacity: 0;
-            }
+            }}
 
-            65% {
+            63% {{
                 opacity: 1;
-            }
+            }}
 
-            66% {
-                opacity: 0.15;
-            }
+            64% {{
+                opacity: 0.18;
+            }}
 
-            67% {
-                opacity: 0.92;
-            }
+            65% {{
+                opacity: 0.95;
+            }}
 
-            68% {
-                opacity: 0.20;
-            }
+            66% {{
+                opacity: 0.12;
+            }}
 
-            69% {
-                opacity: 0.72;
-            }
+            67% {{
+                opacity: 0.78;
+            }}
 
-            70%, 100% {
+            68%, 100% {{
                 opacity: 0;
-            }
-        }
+            }}
+        }}
 
-        /* Keep main app content usable and above rain */
-        [data-testid="stAppViewContainer"] .block-container {
+        /* Keep app card above rain, so rain does not look like mirror/glass over table */
+        [data-testid="stAppViewContainer"] .block-container {{
             position: relative !important;
-            z-index: 10000 !important;
-        }
+            z-index: 10 !important;
+        }}
 
-        /* Keep Streamlit header and dark/bright button above everything */
+        /* Keep top controls above everything */
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {
+        .st-key-dark_bright_toggle_btn button {{
             z-index: 10000000 !important;
-        }
+        }}
         </style>
+
+        <div class="storm-rain-layer">
+            {drops_html}
+        </div>
+        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
