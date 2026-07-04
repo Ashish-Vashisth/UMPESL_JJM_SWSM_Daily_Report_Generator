@@ -472,7 +472,7 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds clearly visible moving rain + thunderstorm effect only in Dark mode.
+    Adds light drizzle rain + brighter thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
@@ -483,55 +483,79 @@ def apply_dark_mode_weather_effect():
         """
         <style>
         /* =====================================================
-           STRONG RAIN EFFECT - DARK MODE ONLY
+           LIGHT DRIZZLE RAIN EFFECT - DARK MODE ONLY
            ===================================================== */
 
         body::before {
             content: "";
             position: fixed;
-            top: -120px;
+            top: -160px;
             left: 0;
             width: 100vw;
-            height: calc(100vh + 240px);
+            height: calc(100vh + 320px);
             pointer-events: none;
             z-index: 9998;
-            opacity: 0.65;
+            opacity: 0.34;
 
             background-image:
                 linear-gradient(
-                    115deg,
-                    rgba(180,210,255,0.00) 0%,
-                    rgba(180,210,255,0.00) 38%,
-                    rgba(180,210,255,0.85) 39%,
-                    rgba(180,210,255,0.85) 42%,
-                    rgba(180,210,255,0.00) 43%,
-                    rgba(180,210,255,0.00) 100%
+                    105deg,
+                    rgba(255,255,255,0.00) 0%,
+                    rgba(255,255,255,0.00) 48%,
+                    rgba(170,190,220,0.36) 49%,
+                    rgba(170,190,220,0.36) 50%,
+                    rgba(255,255,255,0.00) 51%,
+                    rgba(255,255,255,0.00) 100%
                 ),
                 linear-gradient(
-                    115deg,
+                    105deg,
                     rgba(255,255,255,0.00) 0%,
-                    rgba(255,255,255,0.00) 45%,
-                    rgba(255,255,255,0.60) 46%,
-                    rgba(255,255,255,0.60) 48%,
-                    rgba(255,255,255,0.00) 49%,
+                    rgba(255,255,255,0.00) 48%,
+                    rgba(210,225,245,0.26) 49%,
+                    rgba(210,225,245,0.26) 50%,
+                    rgba(255,255,255,0.00) 51%,
+                    rgba(255,255,255,0.00) 100%
+                ),
+                linear-gradient(
+                    105deg,
+                    rgba(255,255,255,0.00) 0%,
+                    rgba(255,255,255,0.00) 48%,
+                    rgba(180,205,235,0.22) 49%,
+                    rgba(180,205,235,0.22) 50%,
+                    rgba(255,255,255,0.00) 51%,
                     rgba(255,255,255,0.00) 100%
                 );
 
-            background-size: 18px 48px, 28px 70px;
-            animation: heavyRainMove 0.28s linear infinite;
+            background-size:
+                92px 190px,
+                135px 260px,
+                180px 330px;
+
+            background-position:
+                0px -200px,
+                40px -260px,
+                90px -320px;
+
+            animation: drizzleRainMove 1.35s linear infinite;
         }
 
-        @keyframes heavyRainMove {
+        @keyframes drizzleRainMove {
             0% {
-                background-position: 0px -120px, 0px -160px;
+                background-position:
+                    0px -220px,
+                    40px -280px,
+                    90px -340px;
             }
             100% {
-                background-position: -55px 120px, -80px 160px;
+                background-position:
+                    -42px 220px,
+                    -30px 280px,
+                    10px 340px;
             }
         }
 
         /* =====================================================
-           THUNDER / LIGHTNING FLASH
+           BRIGHT THUNDER / LIGHTNING FLASH
            ===================================================== */
 
         body::after {
@@ -539,47 +563,64 @@ def apply_dark_mode_weather_effect():
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 9997;
+            z-index: 9999;
+
             background:
                 radial-gradient(
                     circle at 70% 8%,
-                    rgba(255,255,255,0.85),
-                    rgba(255,255,255,0.22) 18%,
-                    rgba(255,255,255,0.00) 42%
+                    rgba(255,255,255,0.95),
+                    rgba(255,255,255,0.40) 16%,
+                    rgba(255,255,255,0.12) 32%,
+                    rgba(255,255,255,0.00) 52%
                 ),
                 linear-gradient(
-                    rgba(255,255,255,0.10),
+                    rgba(255,255,255,0.22),
+                    rgba(255,255,255,0.04),
                     rgba(255,255,255,0.00)
                 );
+
             opacity: 0;
-            animation: thunderFlashStrong 6s infinite;
+            mix-blend-mode: screen;
+            animation: brightThunderFlash 5.8s infinite;
         }
 
-        @keyframes thunderFlashStrong {
-            0%, 72%, 100% {
+        @keyframes brightThunderFlash {
+            0%, 68%, 100% {
                 opacity: 0;
             }
-            73% {
-                opacity: 0.95;
+
+            69% {
+                opacity: 1;
             }
-            74% {
+
+            70% {
+                opacity: 0.18;
+            }
+
+            71% {
+                opacity: 0.82;
+            }
+
+            72% {
                 opacity: 0.10;
             }
-            75% {
-                opacity: 0.70;
+
+            73% {
+                opacity: 0.55;
             }
-            76%, 100% {
+
+            74%, 100% {
                 opacity: 0;
             }
         }
 
-        /* Keep main app usable */
+        /* Keep main app content usable and above rain */
         [data-testid="stAppViewContainer"] .block-container {
             position: relative !important;
             z-index: 10000 !important;
         }
 
-        /* Keep Streamlit header/button above rain */
+        /* Keep Streamlit header and dark/bright button above everything */
         header,
         .st-key-dark_bright_toggle_btn,
         .st-key-dark_bright_toggle_btn button {
