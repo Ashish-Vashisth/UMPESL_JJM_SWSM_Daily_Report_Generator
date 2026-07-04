@@ -474,7 +474,7 @@ def apply_dark_mode_weather_effect():
     """
     Adds natural drizzle rain + bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Rain droplets are increased and speed is faster.
+    Rain now covers the full visible page while scrolling.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
@@ -530,7 +530,6 @@ def apply_dark_mode_weather_effect():
         (94, -0.3, 2.5, 78, 0.46, -90),
         (96, -1.8, 2.7, 60, 0.38, -82),
         (98, -2.9, 2.9, 52, 0.36, -78),
-
         (5, -4.8, 3.1, 38, 0.30, -64),
         (9, -5.2, 3.0, 44, 0.32, -68),
         (13, -4.4, 2.9, 44, 0.32, -68),
@@ -547,45 +546,6 @@ def apply_dark_mode_weather_effect():
         (75, -5.4, 2.8, 44, 0.32, -70),
         (83, -6.5, 3.1, 50, 0.34, -74),
         (91, -5.9, 3.0, 46, 0.33, -70),
-        (2, -0.2, 2.6, 58, 0.38, -80),
-        (4, -1.1, 2.4, 66, 0.40, -88),
-        (6, -1.7, 2.5, 72, 0.44, -90),
-        (8, -0.8, 2.7, 54, 0.36, -78),
-        (10, -2.4, 2.6, 64, 0.42, -84),
-        (12, -3.1, 2.9, 46, 0.34, -75),
-        (14, -1.5, 2.5, 60, 0.38, -82),
-        (16, -2.2, 2.6, 62, 0.39, -82),
-        (18, -0.9, 2.3, 64, 0.42, -85),
-        (20, -2.8, 2.7, 70, 0.44, -90),
-        (22, -3.6, 2.5, 54, 0.36, -78),
-        (24, -2.4, 2.7, 82, 0.48, -95),
-        (26, -4.0, 3.0, 42, 0.32, -70),
-        (28, -1.2, 2.4, 76, 0.46, -88),
-        (30, -2.8, 2.6, 60, 0.38, -82),
-        (32, -3.5, 2.8, 52, 0.36, -78),
-        (34, -0.6, 2.3, 88, 0.50, -96),
-        (36, -1.9, 2.6, 68, 0.42, -86),
-        (38, -2.9, 3.0, 48, 0.34, -72),
-        (40, -4.3, 2.7, 56, 0.36, -80),
-        (42, -1.5, 2.5, 70, 0.44, -86),
-        (44, -3.8, 2.4, 58, 0.38, -82),
-        (46, -2.6, 2.8, 74, 0.42, -90),
-        (48, -0.4, 2.8, 84, 0.50, -94),
-        (50, -1.8, 2.5, 64, 0.40, -84),
-        (52, -2.2, 3.1, 50, 0.34, -76),
-        (54, -4.6, 2.6, 66, 0.42, -84),
-        (56, -3.2, 2.9, 52, 0.36, -78),
-        (58, -0.7, 2.5, 76, 0.44, -88),
-        (60, -1.4, 2.4, 62, 0.39, -82),
-        (62, -2.6, 2.8, 70, 0.42, -90),
-        (64, -3.7, 2.6, 58, 0.38, -82),
-        (66, -1.0, 2.5, 82, 0.48, -94),
-        (68, -2.1, 2.7, 54, 0.36, -78),
-        (70, -3.3, 2.8, 66, 0.42, -86),
-        (72, -0.5, 2.5, 74, 0.44, -90),
-        (74, -1.9, 2.6, 60, 0.38, -82),
-        (76, -2.7, 2.9, 52, 0.36, -76),
-        
     ]
 
     drops_html = ""
@@ -600,21 +560,24 @@ def apply_dark_mode_weather_effect():
         f"""
         <style>
         /* =====================================================
-           NATURAL DRIZZLE RAIN
-           More droplets + faster falling speed
+           FULL SCREEN RAIN LAYER
+           Covers complete visible viewport even after scrolling
            ===================================================== */
 
         .storm-rain-layer {{
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 3;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            z-index: 999999 !important;
         }}
 
         .storm-rain-drop {{
             position: absolute;
-            top: -130px;
+            top: -140px;
             left: var(--left);
             width: 1.35px;
             height: var(--length);
@@ -634,7 +597,7 @@ def apply_dark_mode_weather_effect():
 
         @keyframes naturalFastRain {{
             0% {{
-                transform: translate3d(0, -20vh, 0) rotate(-8deg);
+                transform: translate3d(0, -24vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
 
@@ -642,26 +605,27 @@ def apply_dark_mode_weather_effect():
                 opacity: var(--opacity);
             }}
 
-            82% {{
+            84% {{
                 opacity: var(--opacity);
             }}
 
             100% {{
-                transform: translate3d(var(--drift), 125vh, 0) rotate(-8deg);
+                transform: translate3d(var(--drift), 130vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
         }}
 
         /* =====================================================
-           BRIGHT THUNDERSTORM FLASH
-           Kept unchanged as requested
+           BRIGHT THUNDERSTORM FLASH - UNCHANGED
            ===================================================== */
 
         .storm-lightning-flash {{
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 4;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 1000000 !important;
             opacity: 0;
             mix-blend-mode: screen;
             background:
@@ -711,7 +675,7 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
-        /* Keep app card above rain */
+        /* Keep app content clickable */
         [data-testid="stAppViewContainer"] .block-container {{
             position: relative !important;
             z-index: 10 !important;
