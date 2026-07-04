@@ -759,7 +759,7 @@ def apply_dark_mode_weather_effect():
     Dark and Bright modes remain clean.
     """
 
-    if st.session_state.get("theme_mode", "dark") != "rain":
+    if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
     rain_drops = [
