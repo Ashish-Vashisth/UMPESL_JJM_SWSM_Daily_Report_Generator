@@ -754,184 +754,127 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds full-screen natural drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds natural full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Droplet size is kept similar, count is increased, and rain covers the full viewport.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
+    rain_drops = []
+
+    left_value = 1
+    delay_value = 0
+    duration_values = [2.05, 2.15, 2.25, 2.35, 2.45, 2.55]
+    length_values = [42, 46, 50, 54, 58, 62]
+    opacity_values = [0.26, 0.30, 0.34, 0.38]
+    drift_values = [-62, -70, -78, -86, -94]
+
+    duration_index = 0
+    length_index = 0
+    opacity_index = 0
+    drift_index = 0
+
+    for item in range(125):
+        rain_drops.append(
+            (
+                left_value,
+                delay_value,
+                duration_values[duration_index],
+                length_values[length_index],
+                opacity_values[opacity_index],
+                drift_values[drift_index],
+            )
+        )
+
+        left_value = left_value + 7.4
+        if left_value > 100:
+            left_value = left_value - 100
+
+        delay_value = delay_value - 0.13
+        if delay_value < -6.5:
+            delay_value = delay_value + 6.5
+
+        duration_index = duration_index + 1
+        if duration_index >= len(duration_values):
+            duration_index = 0
+
+        length_index = length_index + 1
+        if length_index >= len(length_values):
+            length_index = 0
+
+        opacity_index = opacity_index + 1
+        if opacity_index >= len(opacity_values):
+            opacity_index = 0
+
+        drift_index = drift_index + 1
+        if drift_index >= len(drift_values):
+            drift_index = 0
+
+    drops_html = ""
+
+    for left, delay, duration, length, opacity, drift in rain_drops:
+        drops_html += (
+            f'<span class="storm-rain-drop" '
+            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
+            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
+        )
+
     st.markdown(
-        """
+        f"""
         <style>
-        body::before {
-            content: "";
+        .storm-rain-layer {{
             position: fixed !important;
-            top: -120px !important;
+            top: 0 !important;
             left: 0 !important;
-            width: 1.35px !important;
-            height: 58px !important;
+            width: 100vw !important;
+            height: 100vh !important;
             pointer-events: none !important;
+            overflow: hidden !important;
             z-index: 2147483000 !important;
-            opacity: 1 !important;
-            border-radius: 999px !important;
-            background: linear-gradient(
-                to bottom,
-                rgba(220,230,245,0.00),
-                rgba(220,230,245,0.78),
-                rgba(220,230,245,0.00)
-            ) !important;
-            filter: blur(0.10px);
-            transform: rotate(-8deg);
+        }}
 
-            box-shadow:
-                2vw 2vh 0 rgba(220,230,245,0.38),
-                6vw 12vh 0 rgba(220,230,245,0.40),
-                10vw 22vh 0 rgba(220,230,245,0.36),
-                14vw 32vh 0 rgba(220,230,245,0.42),
-                18vw 42vh 0 rgba(220,230,245,0.38),
-                22vw 52vh 0 rgba(220,230,245,0.44),
-                26vw 62vh 0 rgba(220,230,245,0.36),
-                30vw 72vh 0 rgba(220,230,245,0.42),
-                34vw 82vh 0 rgba(220,230,245,0.38),
-                38vw 92vh 0 rgba(220,230,245,0.40),
-
-                42vw 4vh 0 rgba(220,230,245,0.38),
-                46vw 14vh 0 rgba(220,230,245,0.42),
-                50vw 24vh 0 rgba(220,230,245,0.36),
-                54vw 34vh 0 rgba(220,230,245,0.44),
-                58vw 44vh 0 rgba(220,230,245,0.38),
-                62vw 54vh 0 rgba(220,230,245,0.42),
-                66vw 64vh 0 rgba(220,230,245,0.36),
-                70vw 74vh 0 rgba(220,230,245,0.44),
-                74vw 84vh 0 rgba(220,230,245,0.38),
-                78vw 94vh 0 rgba(220,230,245,0.42),
-
-                82vw 8vh 0 rgba(220,230,245,0.38),
-                86vw 18vh 0 rgba(220,230,245,0.42),
-                90vw 28vh 0 rgba(220,230,245,0.36),
-                94vw 38vh 0 rgba(220,230,245,0.44),
-                98vw 48vh 0 rgba(220,230,245,0.38),
-
-                4vw 58vh 0 rgba(220,230,245,0.42),
-                8vw 68vh 0 rgba(220,230,245,0.36),
-                12vw 78vh 0 rgba(220,230,245,0.44),
-                16vw 88vh 0 rgba(220,230,245,0.38),
-                20vw 98vh 0 rgba(220,230,245,0.42),
-
-                24vw 6vh 0 rgba(220,230,245,0.38),
-                28vw 16vh 0 rgba(220,230,245,0.42),
-                32vw 26vh 0 rgba(220,230,245,0.36),
-                36vw 36vh 0 rgba(220,230,245,0.44),
-                40vw 46vh 0 rgba(220,230,245,0.38),
-                44vw 56vh 0 rgba(220,230,245,0.42),
-                48vw 66vh 0 rgba(220,230,245,0.36),
-                52vw 76vh 0 rgba(220,230,245,0.44),
-                56vw 86vh 0 rgba(220,230,245,0.38),
-                60vw 96vh 0 rgba(220,230,245,0.42),
-
-                64vw 10vh 0 rgba(220,230,245,0.38),
-                68vw 20vh 0 rgba(220,230,245,0.42),
-                72vw 30vh 0 rgba(220,230,245,0.36),
-                76vw 40vh 0 rgba(220,230,245,0.44),
-                80vw 50vh 0 rgba(220,230,245,0.38),
-                84vw 60vh 0 rgba(220,230,245,0.42),
-                88vw 70vh 0 rgba(220,230,245,0.36),
-                92vw 80vh 0 rgba(220,230,245,0.44),
-                96vw 90vh 0 rgba(220,230,245,0.38);
-
-            animation: rainFullScreenOne 1.65s linear infinite;
-        }
-
-        @keyframes rainFullScreenOne {
-            0% {
-                transform: translate3d(0, -28vh, 0) rotate(-8deg);
-            }
-
-            100% {
-                transform: translate3d(-92px, 135vh, 0) rotate(-8deg);
-            }
-        }
-
-        [data-testid="stAppViewContainer"]::before {
-            content: "";
-            position: fixed !important;
-            top: -140px !important;
-            left: 0 !important;
-            width: 1.35px !important;
-            height: 52px !important;
-            pointer-events: none !important;
-            z-index: 2147483000 !important;
-            opacity: 1 !important;
-            border-radius: 999px !important;
+        .storm-rain-drop {{
+            position: absolute;
+            top: -150px;
+            left: var(--left);
+            width: 1.08px;
+            height: var(--length);
+            opacity: 0;
+            border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
                 rgba(220,230,245,0.68),
                 rgba(220,230,245,0.00)
-            ) !important;
-            filter: blur(0.10px);
+            );
+            filter: blur(0.06px);
             transform: rotate(-8deg);
+            animation: naturalEvenRain var(--duration) linear infinite;
+            animation-delay: var(--delay);
+        }}
 
-            box-shadow:
-                1vw 15vh 0 rgba(220,230,245,0.36),
-                5vw 25vh 0 rgba(220,230,245,0.40),
-                9vw 35vh 0 rgba(220,230,245,0.34),
-                13vw 45vh 0 rgba(220,230,245,0.42),
-                17vw 55vh 0 rgba(220,230,245,0.36),
-                21vw 65vh 0 rgba(220,230,245,0.40),
-                25vw 75vh 0 rgba(220,230,245,0.34),
-                29vw 85vh 0 rgba(220,230,245,0.42),
-                33vw 95vh 0 rgba(220,230,245,0.36),
+        @keyframes naturalEvenRain {{
+            0% {{
+                transform: translate3d(0, -34vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
 
-                37vw 12vh 0 rgba(220,230,245,0.40),
-                41vw 22vh 0 rgba(220,230,245,0.34),
-                45vw 32vh 0 rgba(220,230,245,0.42),
-                49vw 42vh 0 rgba(220,230,245,0.36),
-                53vw 52vh 0 rgba(220,230,245,0.40),
-                57vw 62vh 0 rgba(220,230,245,0.34),
-                61vw 72vh 0 rgba(220,230,245,0.42),
-                65vw 82vh 0 rgba(220,230,245,0.36),
-                69vw 92vh 0 rgba(220,230,245,0.40),
+            10% {{
+                opacity: var(--opacity);
+            }}
 
-                73vw 18vh 0 rgba(220,230,245,0.34),
-                77vw 28vh 0 rgba(220,230,245,0.42),
-                81vw 38vh 0 rgba(220,230,245,0.36),
-                85vw 48vh 0 rgba(220,230,245,0.40),
-                89vw 58vh 0 rgba(220,230,245,0.34),
-                93vw 68vh 0 rgba(220,230,245,0.42),
-                97vw 78vh 0 rgba(220,230,245,0.36),
+            84% {{
+                opacity: var(--opacity);
+            }}
 
-                3vw 88vh 0 rgba(220,230,245,0.40),
-                11vw 6vh 0 rgba(220,230,245,0.34),
-                19vw 16vh 0 rgba(220,230,245,0.42),
-                27vw 26vh 0 rgba(220,230,245,0.36),
-                35vw 36vh 0 rgba(220,230,245,0.40),
-                43vw 46vh 0 rgba(220,230,245,0.34),
-                51vw 56vh 0 rgba(220,230,245,0.42),
-                59vw 66vh 0 rgba(220,230,245,0.36),
-                67vw 76vh 0 rgba(220,230,245,0.40),
-                75vw 86vh 0 rgba(220,230,245,0.34),
-                83vw 96vh 0 rgba(220,230,245,0.42),
-                91vw 9vh 0 rgba(220,230,245,0.36),
-                99vw 19vh 0 rgba(220,230,245,0.40);
+            100% {{
+                transform: translate3d(var(--drift), 138vh, 0) rotate(-8deg);
+                opacity: 0;
+            }}
+        }}
 
-            animation: rainFullScreenTwo 1.85s linear infinite;
-        }
-
-        @keyframes rainFullScreenTwo {
-            0% {
-                transform: translate3d(0, -32vh, 0) rotate(-8deg);
-            }
-
-            100% {
-                transform: translate3d(-86px, 138vh, 0) rotate(-8deg);
-            }
-        }
-
-        [data-testid="stAppViewContainer"]::after {
-            content: "";
+        .storm-lightning-flash {{
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
@@ -955,50 +898,55 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.00)
                 );
             animation: brightStormFlash 6.2s infinite;
-        }
+        }}
 
-        @keyframes brightStormFlash {
-            0%, 62%, 100% {
+        @keyframes brightStormFlash {{
+            0%, 62%, 100% {{
                 opacity: 0;
-            }
+            }}
 
-            63% {
+            63% {{
                 opacity: 1;
-            }
+            }}
 
-            64% {
+            64% {{
                 opacity: 0.18;
-            }
+            }}
 
-            65% {
+            65% {{
                 opacity: 0.95;
-            }
+            }}
 
-            66% {
+            66% {{
                 opacity: 0.12;
-            }
+            }}
 
-            67% {
+            67% {{
                 opacity: 0.78;
-            }
+            }}
 
-            68%, 100% {
+            68%, 100% {{
                 opacity: 0;
-            }
-        }
-
-        body::before,
-        [data-testid="stAppViewContainer"]::before,
-        [data-testid="stAppViewContainer"]::after {
-            pointer-events: none !important;
-        }
+            }}
+        }}
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {
+        .st-key-dark_bright_toggle_btn button {{
             z-index: 2147483647 !important;
-        }
+        }}
+
+        .storm-rain-layer,
+        .storm-rain-drop,
+        .storm-lightning-flash {{
+            pointer-events: none !important;
+        }}
         </style>
+
+        <div class="storm-rain-layer">
+            {drops_html}
+        </div>
+        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
