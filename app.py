@@ -611,92 +611,263 @@ def apply_dark_bright_toggle():
             unsafe_allow_html=True
         )   
 
+def apply_dark_bright_toggle():
+    """
+    Adds only a Dark/Bright icon at the top-right corner.
+    No version pill is shown.
+    """
+
+    if "theme_mode" not in st.session_state:
+        st.session_state["theme_mode"] = "dark"
+
+    st.markdown(
+        """
+        <style>
+        /* Fixed top-right theme toggle container */
+        .theme-toggle-fixed {
+            position: fixed;
+            top: 14px;
+            right: 18px;
+            z-index: 999999;
+        }
+
+        /* Style only the theme toggle button */
+        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"] {
+            width: 54px !important;
+            height: 46px !important;
+            min-height: 46px !important;
+            padding: 0 !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.92) !important;
+            color: #111827 !important;
+            border: 1px solid rgba(15,23,42,0.14) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.20) !important;
+            font-size: 1.15rem !important;
+        }
+
+        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"]:hover {
+            background: rgba(255,255,255,1) !important;
+            color: #111827 !important;
+            border: 1px solid rgba(15,23,42,0.22) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    col_left, col_right = st.columns([12, 1])
+
+    with col_right:
+        toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
+
+        if st.button(toggle_label, key="dark_bright_toggle_btn", help="Switch Dark / Bright mode"):
+            if st.session_state["theme_mode"] == "dark":
+                st.session_state["theme_mode"] = "bright"
+            else:
+                st.session_state["theme_mode"] = "dark"
+
+    if st.session_state["theme_mode"] == "bright":
+        st.markdown(
+            f"""
+            <style>
+            /* =========================
+               BRIGHT MODE BACKGROUND
+               ========================= */
+            [data-testid="stAppViewContainer"] {{
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.52), rgba(255,255,255,0.52)),
+                    url("data:image/jpeg;base64,{BACKGROUND_B64}") !important;
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE MAIN CARD
+               ========================= */
+            [data-testid="stAppViewContainer"] .block-container {{
+                background: rgba(255,255,255,0.74) !important;
+                border: 1px solid rgba(15,23,42,0.14) !important;
+                box-shadow: 0 12px 28px rgba(15,23,42,0.22) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE TEXT
+               ========================= */
+            h1, h2, h3, h4, h5, h6, p, label,
+            .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE FILE UPLOADER
+               ========================= */
+            [data-testid="stFileUploader"] section {{
+                background: rgba(15,23,42,0.08) !important;
+                border: 1px solid rgba(15,23,42,0.18) !important;
+            }}
+
+            [data-testid="stFileUploader"] section * {{
+                color: #111827 !important;
+                font-weight: 700 !important;
+            }}
+
+            [data-testid="stFileUploaderFile"],
+            [data-testid="stFileUploader"] li {{
+                background: rgba(255,255,255,0.75) !important;
+                border: 1px solid rgba(15,23,42,0.15) !important;
+            }}
+
+            [data-testid="stFileUploaderFile"] span,
+            [data-testid="stFileUploaderFile"] p,
+            [data-testid="stFileUploaderFile"] small {{
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE EXPANDERS
+               ========================= */
+            details {{
+                background: rgba(255,255,255,0.68) !important;
+                border: 1px solid rgba(15,23,42,0.16) !important;
+            }}
+
+            details summary {{
+                background: rgba(255,255,255,0.82) !important;
+                border: 1px solid rgba(15,23,42,0.16) !important;
+                color: #111827 !important;
+            }}
+
+            /* =========================
+               BRIGHT MODE ALERTS
+               ========================= */
+            [data-testid="stAlert"] {{
+                box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )   
+
 def apply_dark_mode_weather_effect():
     """
     Adds natural drizzle rain + bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    More droplets with slightly faster falling speed.
+    Rain droplets are increased and speed is faster.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
     rain_drops = [
-        (2, -0.2, 2.2, 48, 0.34, -78),
-        (4, -1.0, 2.1, 52, 0.36, -82),
-        (6, -1.6, 2.2, 58, 0.38, -86),
-        (8, -0.8, 2.3, 44, 0.32, -74),
-        (10, -2.2, 2.2, 54, 0.36, -82),
-        (12, -3.0, 2.4, 42, 0.30, -72),
-        (14, -1.4, 2.1, 50, 0.34, -80),
-        (16, -2.1, 2.2, 52, 0.35, -82),
-        (18, -0.9, 2.0, 54, 0.36, -84),
-        (20, -2.7, 2.3, 58, 0.38, -88),
-        (22, -3.5, 2.1, 46, 0.32, -76),
-        (24, -2.4, 2.3, 64, 0.40, -92),
-        (26, -4.0, 2.5, 38, 0.28, -68),
-        (28, -1.2, 2.1, 60, 0.38, -86),
-        (30, -2.8, 2.2, 50, 0.34, -80),
-        (32, -3.4, 2.3, 44, 0.32, -76),
-        (34, -0.6, 2.0, 68, 0.42, -94),
-        (36, -1.9, 2.2, 56, 0.36, -84),
-        (38, -2.9, 2.5, 42, 0.30, -70),
-        (40, -4.2, 2.3, 48, 0.32, -78),
-        (42, -1.5, 2.1, 58, 0.38, -84),
-        (44, -3.7, 2.0, 48, 0.34, -80),
-        (46, -2.5, 2.3, 60, 0.36, -88),
-        (48, -0.4, 2.3, 66, 0.42, -92),
-        (50, -1.8, 2.1, 52, 0.35, -82),
-        (52, -2.2, 2.6, 42, 0.30, -74),
-        (54, -4.5, 2.2, 54, 0.36, -82),
-        (56, -3.1, 2.4, 44, 0.32, -76),
-        (58, -0.7, 2.1, 60, 0.38, -86),
-        (60, -1.4, 2.0, 52, 0.34, -80),
-        (62, -2.6, 2.3, 58, 0.36, -88),
-        (64, -3.6, 2.2, 48, 0.33, -80),
-        (66, -1.0, 2.1, 64, 0.40, -92),
-        (68, -2.1, 2.3, 46, 0.32, -76),
-        (70, -3.2, 2.4, 54, 0.36, -84),
-        (72, -0.5, 2.1, 60, 0.38, -88),
-        (74, -1.9, 2.2, 50, 0.34, -80),
-        (76, -2.7, 2.4, 44, 0.32, -74),
-        (78, -3.5, 2.1, 56, 0.36, -84),
-        (80, -0.9, 2.0, 66, 0.42, -92),
-        (82, -1.6, 2.2, 52, 0.35, -82),
-        (84, -2.8, 2.5, 42, 0.30, -70),
-        (86, -4.2, 2.3, 48, 0.32, -78),
-        (88, -1.3, 2.1, 58, 0.38, -84),
-        (90, -2.4, 2.3, 48, 0.34, -80),
-        (92, -3.8, 2.2, 54, 0.36, -82),
-        (94, -0.3, 2.1, 62, 0.40, -88),
-        (96, -1.8, 2.3, 50, 0.34, -80),
-        (98, -2.9, 2.4, 44, 0.32, -76),
+        (2, -0.2, 2.6, 58, 0.38, -80),
+        (4, -1.1, 2.4, 66, 0.40, -88),
+        (6, -1.7, 2.5, 72, 0.44, -90),
+        (8, -0.8, 2.7, 54, 0.36, -78),
+        (10, -2.4, 2.6, 64, 0.42, -84),
+        (12, -3.1, 2.9, 46, 0.34, -75),
+        (14, -1.5, 2.5, 60, 0.38, -82),
+        (16, -2.2, 2.6, 62, 0.39, -82),
+        (18, -0.9, 2.3, 64, 0.42, -85),
+        (20, -2.8, 2.7, 70, 0.44, -90),
+        (22, -3.6, 2.5, 54, 0.36, -78),
+        (24, -2.4, 2.7, 82, 0.48, -95),
+        (26, -4.0, 3.0, 42, 0.32, -70),
+        (28, -1.2, 2.4, 76, 0.46, -88),
+        (30, -2.8, 2.6, 60, 0.38, -82),
+        (32, -3.5, 2.8, 52, 0.36, -78),
+        (34, -0.6, 2.3, 88, 0.50, -96),
+        (36, -1.9, 2.6, 68, 0.42, -86),
+        (38, -2.9, 3.0, 48, 0.34, -72),
+        (40, -4.3, 2.7, 56, 0.36, -80),
+        (42, -1.5, 2.5, 70, 0.44, -86),
+        (44, -3.8, 2.4, 58, 0.38, -82),
+        (46, -2.6, 2.8, 74, 0.42, -90),
+        (48, -0.4, 2.8, 84, 0.50, -94),
+        (50, -1.8, 2.5, 64, 0.40, -84),
+        (52, -2.2, 3.1, 50, 0.34, -76),
+        (54, -4.6, 2.6, 66, 0.42, -84),
+        (56, -3.2, 2.9, 52, 0.36, -78),
+        (58, -0.7, 2.5, 76, 0.44, -88),
+        (60, -1.4, 2.4, 62, 0.39, -82),
+        (62, -2.6, 2.8, 70, 0.42, -90),
+        (64, -3.7, 2.6, 58, 0.38, -82),
+        (66, -1.0, 2.5, 82, 0.48, -94),
+        (68, -2.1, 2.7, 54, 0.36, -78),
+        (70, -3.3, 2.8, 66, 0.42, -86),
+        (72, -0.5, 2.5, 74, 0.44, -90),
+        (74, -1.9, 2.6, 60, 0.38, -82),
+        (76, -2.7, 2.9, 52, 0.36, -76),
+        (78, -3.5, 2.5, 68, 0.42, -86),
+        (80, -0.9, 2.4, 84, 0.50, -94),
+        (82, -1.6, 2.6, 64, 0.40, -84),
+        (84, -2.8, 3.0, 48, 0.34, -72),
+        (86, -4.2, 2.7, 56, 0.36, -80),
+        (88, -1.3, 2.5, 70, 0.44, -86),
+        (90, -2.4, 2.8, 58, 0.38, -82),
+        (92, -3.9, 2.6, 66, 0.42, -84),
+        (94, -0.3, 2.5, 78, 0.46, -90),
+        (96, -1.8, 2.7, 60, 0.38, -82),
+        (98, -2.9, 2.9, 52, 0.36, -78),
 
-        (3, -4.3, 2.5, 42, 0.30, -70),
-        (7, -4.8, 2.6, 38, 0.28, -66),
-        (11, -5.1, 2.4, 46, 0.32, -72),
-        (15, -4.5, 2.3, 44, 0.31, -70),
-        (19, -5.7, 2.7, 48, 0.32, -74),
-        (23, -6.0, 2.6, 42, 0.30, -68),
-        (27, -5.3, 2.4, 46, 0.32, -72),
-        (31, -4.9, 2.5, 40, 0.30, -66),
-        (35, -6.1, 2.7, 48, 0.34, -74),
-        (39, -5.6, 2.3, 52, 0.35, -78),
-        (43, -6.3, 2.6, 44, 0.31, -70),
-        (47, -5.0, 2.4, 48, 0.32, -74),
-        (51, -5.4, 2.5, 42, 0.30, -68),
-        (55, -6.2, 2.7, 46, 0.32, -72),
-        (59, -4.7, 2.3, 48, 0.34, -74),
-        (63, -5.9, 2.6, 44, 0.31, -70),
-        (67, -6.4, 2.7, 50, 0.34, -76),
-        (71, -5.2, 2.4, 46, 0.32, -72),
-        (75, -5.8, 2.5, 42, 0.30, -68),
-        (79, -6.5, 2.7, 48, 0.33, -74),
-        (83, -5.5, 2.4, 44, 0.31, -70),
-        (87, -6.0, 2.6, 50, 0.34, -76),
-        (91, -5.6, 2.5, 46, 0.32, -72),
-        (95, -6.3, 2.7, 42, 0.30, -68),
-        (99, -4.6, 2.3, 48, 0.34, -74),
+        (5, -4.8, 3.1, 38, 0.30, -64),
+        (9, -5.2, 3.0, 44, 0.32, -68),
+        (13, -4.4, 2.9, 44, 0.32, -68),
+        (17, -5.8, 3.2, 46, 0.31, -72),
+        (21, -6.2, 3.1, 50, 0.35, -74),
+        (25, -5.5, 2.9, 44, 0.34, -68),
+        (29, -4.9, 3.2, 40, 0.31, -66),
+        (33, -6.0, 3.3, 48, 0.34, -72),
+        (37, -5.7, 2.8, 54, 0.38, -80),
+        (43, -6.4, 3.1, 46, 0.33, -70),
+        (51, -5.2, 3.0, 42, 0.32, -68),
+        (59, -4.7, 2.9, 48, 0.34, -72),
+        (67, -6.1, 3.2, 52, 0.35, -76),
+        (75, -5.4, 2.8, 44, 0.32, -70),
+        (83, -6.5, 3.1, 50, 0.34, -74),
+        (91, -5.9, 3.0, 46, 0.33, -70),
+        (2, -0.2, 2.6, 58, 0.38, -80),
+        (4, -1.1, 2.4, 66, 0.40, -88),
+        (6, -1.7, 2.5, 72, 0.44, -90),
+        (8, -0.8, 2.7, 54, 0.36, -78),
+        (10, -2.4, 2.6, 64, 0.42, -84),
+        (12, -3.1, 2.9, 46, 0.34, -75),
+        (14, -1.5, 2.5, 60, 0.38, -82),
+        (16, -2.2, 2.6, 62, 0.39, -82),
+        (18, -0.9, 2.3, 64, 0.42, -85),
+        (20, -2.8, 2.7, 70, 0.44, -90),
+        (22, -3.6, 2.5, 54, 0.36, -78),
+        (24, -2.4, 2.7, 82, 0.48, -95),
+        (26, -4.0, 3.0, 42, 0.32, -70),
+        (28, -1.2, 2.4, 76, 0.46, -88),
+        (30, -2.8, 2.6, 60, 0.38, -82),
+        (32, -3.5, 2.8, 52, 0.36, -78),
+        (34, -0.6, 2.3, 88, 0.50, -96),
+        (36, -1.9, 2.6, 68, 0.42, -86),
+        (38, -2.9, 3.0, 48, 0.34, -72),
+        (40, -4.3, 2.7, 56, 0.36, -80),
+        (42, -1.5, 2.5, 70, 0.44, -86),
+        (44, -3.8, 2.4, 58, 0.38, -82),
+        (46, -2.6, 2.8, 74, 0.42, -90),
+        (48, -0.4, 2.8, 84, 0.50, -94),
+        (50, -1.8, 2.5, 64, 0.40, -84),
+        (52, -2.2, 3.1, 50, 0.34, -76),
+        (54, -4.6, 2.6, 66, 0.42, -84),
+        (56, -3.2, 2.9, 52, 0.36, -78),
+        (58, -0.7, 2.5, 76, 0.44, -88),
+        (60, -1.4, 2.4, 62, 0.39, -82),
+        (62, -2.6, 2.8, 70, 0.42, -90),
+        (64, -3.7, 2.6, 58, 0.38, -82),
+        (66, -1.0, 2.5, 82, 0.48, -94),
+        (68, -2.1, 2.7, 54, 0.36, -78),
+        (70, -3.3, 2.8, 66, 0.42, -86),
+        (72, -0.5, 2.5, 74, 0.44, -90),
+        (74, -1.9, 2.6, 60, 0.38, -82),
+        (76, -2.7, 2.9, 52, 0.36, -76),
+        
     ]
 
     drops_html = ""
@@ -712,35 +883,32 @@ def apply_dark_mode_weather_effect():
         <style>
         /* =====================================================
            NATURAL DRIZZLE RAIN
-           More droplets + slightly faster falling speed
+           More droplets + faster falling speed
            ===================================================== */
 
         .storm-rain-layer {{
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            pointer-events: none !important;
-            overflow: hidden !important;
-            z-index: 999999 !important;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 3;
         }}
 
         .storm-rain-drop {{
             position: absolute;
-            top: -120px;
+            top: -130px;
             left: var(--left);
-            width: 1.1px;
+            width: 1.35px;
             height: var(--length);
             opacity: 0;
             border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
-                rgba(220,230,245,0.70),
+                rgba(220,230,245,0.78),
                 rgba(220,230,245,0.00)
             );
-            filter: blur(0.08px);
+            filter: blur(0.10px);
             transform: rotate(-8deg);
             animation: naturalFastRain var(--duration) linear infinite;
             animation-delay: var(--delay);
@@ -748,20 +916,20 @@ def apply_dark_mode_weather_effect():
 
         @keyframes naturalFastRain {{
             0% {{
-                transform: translate3d(0, -22vh, 0) rotate(-8deg);
+                transform: translate3d(0, -20vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
 
-            6% {{
+            7% {{
                 opacity: var(--opacity);
             }}
 
-            84% {{
+            82% {{
                 opacity: var(--opacity);
             }}
 
             100% {{
-                transform: translate3d(var(--drift), 130vh, 0) rotate(-8deg);
+                transform: translate3d(var(--drift), 125vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
         }}
@@ -772,12 +940,10 @@ def apply_dark_mode_weather_effect():
            ===================================================== */
 
         .storm-lightning-flash {{
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            pointer-events: none !important;
-            z-index: 1000000 !important;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
             opacity: 0;
             mix-blend-mode: screen;
             background:
@@ -827,16 +993,17 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
+        /* Keep app card above rain */
+        [data-testid="stAppViewContainer"] .block-container {{
+            position: relative !important;
+            z-index: 10 !important;
+        }}
+
+        /* Keep top controls above everything */
         header,
         .st-key-dark_bright_toggle_btn,
         .st-key-dark_bright_toggle_btn button {{
             z-index: 10000000 !important;
-        }}
-
-        .storm-rain-layer,
-        .storm-rain-drop,
-        .storm-lightning-flash {{
-            pointer-events: none !important;
         }}
         </style>
 
