@@ -613,8 +613,10 @@ def apply_dark_bright_toggle():
 
 def apply_dark_bright_toggle():
     """
-    Adds only a Dark/Bright icon at the top-right corner.
-    No version pill is shown.
+    Three separate UI modes:
+    Dark mode is default.
+    Bright mode is clean light UI.
+    Rain mode is dark UI with rain and thunderstorm.
     """
 
     if "theme_mode" not in st.session_state:
@@ -623,56 +625,118 @@ def apply_dark_bright_toggle():
     st.markdown(
         """
         <style>
-        /* Fixed top-right theme toggle container */
-        .theme-toggle-fixed {
-            position: fixed;
-            top: 14px;
-            right: 18px;
-            z-index: 999999;
-        }
-
-        /* Style only the theme toggle button */
-        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"] {
-            width: 54px !important;
-            height: 46px !important;
-            min-height: 46px !important;
+        .st-key-theme_dark_btn,
+        .st-key-theme_bright_btn,
+        .st-key-theme_rain_btn {
+            position: fixed !important;
+            top: 70px !important;
+            z-index: 2147483647 !important;
+            width: 48px !important;
+            height: 44px !important;
+            margin: 0 !important;
             padding: 0 !important;
-            border-radius: 14px !important;
-            background: rgba(255,255,255,0.92) !important;
-            color: #111827 !important;
-            border: 1px solid rgba(15,23,42,0.14) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.20) !important;
-            font-size: 1.15rem !important;
         }
 
-        div[data-testid="stButton"] button[title="Switch Dark / Bright mode"]:hover {
-            background: rgba(255,255,255,1) !important;
+        .st-key-theme_dark_btn {
+            right: 124px !important;
+        }
+
+        .st-key-theme_bright_btn {
+            right: 70px !important;
+        }
+
+        .st-key-theme_rain_btn {
+            right: 16px !important;
+        }
+
+        .st-key-theme_dark_btn button,
+        .st-key-theme_bright_btn button,
+        .st-key-theme_rain_btn button {
+            width: 48px !important;
+            height: 44px !important;
+            min-height: 44px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.94) !important;
             color: #111827 !important;
-            border: 1px solid rgba(15,23,42,0.22) !important;
+            border: 1px solid rgba(15,23,42,0.18) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.24) !important;
+            font-size: 1.12rem !important;
+            font-weight: 900 !important;
+            line-height: 1 !important;
+        }
+
+        .st-key-theme_dark_btn button:hover,
+        .st-key-theme_bright_btn button:hover,
+        .st-key-theme_rain_btn button:hover {
+            background: #ffffff !important;
+            color: #111827 !important;
+            border: 1px solid rgba(15,23,42,0.30) !important;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    col_left, col_right = st.columns([12, 1])
+    if st.button("🌙", key="theme_dark_btn", help="Dark mode"):
+        st.session_state["theme_mode"] = "dark"
 
-    with col_right:
-        toggle_label = "☀️" if st.session_state["theme_mode"] == "dark" else "🌙"
+    if st.button("☀️", key="theme_bright_btn", help="Bright mode"):
+        st.session_state["theme_mode"] = "bright"
 
-        if st.button(toggle_label, key="dark_bright_toggle_btn", help="Switch Dark / Bright mode"):
-            if st.session_state["theme_mode"] == "dark":
-                st.session_state["theme_mode"] = "bright"
-            else:
-                st.session_state["theme_mode"] = "dark"
+    if st.button("🌧️", key="theme_rain_btn", help="Rain mode"):
+        st.session_state["theme_mode"] = "rain"
 
-    if st.session_state["theme_mode"] == "bright":
+    current_mode = st.session_state.get("theme_mode", "dark")
+
+    if current_mode == "dark":
+        st.markdown(
+            """
+            <style>
+            .st-key-theme_dark_btn button {
+                background: #111827 !important;
+                color: #ffffff !important;
+                border: 1px solid rgba(255,255,255,0.35) !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    if current_mode == "bright":
+        st.markdown(
+            """
+            <style>
+            .st-key-theme_bright_btn button {
+                background: #facc15 !important;
+                color: #111827 !important;
+                border: 1px solid rgba(15,23,42,0.28) !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    if current_mode == "rain":
+        st.markdown(
+            """
+            <style>
+            .st-key-theme_rain_btn button {
+                background: #2563eb !important;
+                color: #ffffff !important;
+                border: 1px solid rgba(255,255,255,0.35) !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    if current_mode == "bright":
         st.markdown(
             f"""
             <style>
-            /* =========================
-               BRIGHT MODE BACKGROUND
-               ========================= */
             [data-testid="stAppViewContainer"] {{
                 background-image:
                     linear-gradient(rgba(255,255,255,0.52), rgba(255,255,255,0.52)),
@@ -683,28 +747,38 @@ def apply_dark_bright_toggle():
                 background-attachment: fixed !important;
             }}
 
-            /* =========================
-               BRIGHT MODE MAIN CARD
-               ========================= */
             [data-testid="stAppViewContainer"] .block-container {{
-                background: rgba(255,255,255,0.74) !important;
+                background: rgba(255,255,255,0.76) !important;
                 border: 1px solid rgba(15,23,42,0.14) !important;
                 box-shadow: 0 12px 28px rgba(15,23,42,0.22) !important;
                 backdrop-filter: blur(8px) !important;
                 -webkit-backdrop-filter: blur(8px) !important;
             }}
 
-            /* =========================
-               BRIGHT MODE TEXT
-               ========================= */
             h1, h2, h3, h4, h5, h6, p, label,
             .stMarkdown, .stText, .stTitle, .stSubheader, .stCaption {{
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE FILE UPLOADER
-               ========================= */
+            input, textarea, select {{
+                background-color: rgba(255,255,255,0.96) !important;
+                color: #111827 !important;
+                border-radius: 10px !important;
+            }}
+
+            [data-testid="stNumberInput"] input {{
+                background-color: rgba(255,255,255,0.96) !important;
+                color: #111827 !important;
+            }}
+
+            [data-testid="stNumberInput"] label,
+            [data-testid="stSlider"] label,
+            [data-testid="stSelectbox"] label,
+            [data-testid="stMultiSelect"] label,
+            [data-testid="stTextInput"] label {{
+                color: #111827 !important;
+            }}
+
             [data-testid="stFileUploader"] section {{
                 background: rgba(15,23,42,0.08) !important;
                 border: 1px solid rgba(15,23,42,0.18) !important;
@@ -727,9 +801,6 @@ def apply_dark_bright_toggle():
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE EXPANDERS
-               ========================= */
             details {{
                 background: rgba(255,255,255,0.68) !important;
                 border: 1px solid rgba(15,23,42,0.16) !important;
@@ -741,9 +812,6 @@ def apply_dark_bright_toggle():
                 color: #111827 !important;
             }}
 
-            /* =========================
-               BRIGHT MODE ALERTS
-               ========================= */
             [data-testid="stAlert"] {{
                 box-shadow: 0 8px 18px rgba(15,23,42,0.18) !important;
             }}
@@ -759,7 +827,7 @@ def apply_dark_mode_weather_effect():
     Drop length and count slightly increased. Falling speed unchanged.
     """
 
-    if st.session_state.get("theme_mode", "dark") != "dark":
+    if st.session_state.get("theme_mode", "dark") != "rain":
         return
 
     st.markdown(
