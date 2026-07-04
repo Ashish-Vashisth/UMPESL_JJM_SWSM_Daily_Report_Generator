@@ -754,7 +754,7 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds fine full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds visible full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
@@ -763,23 +763,25 @@ def apply_dark_mode_weather_effect():
 
     rain_drops = []
 
-    left_value = 1
-    delay_value = 0
+    left_value = 1.0
+    top_value = -10.0
+    delay_value = 0.0
 
-    duration_values = [1.75, 1.82, 1.90, 1.98, 2.05, 2.12]
-    length_values = [28, 32, 36, 40, 44]
-    opacity_values = [0.22, 0.26, 0.30, 0.34]
-    drift_values = [-56, -64, -72, -80]
+    duration_values = [1.65, 1.72, 1.80, 1.88, 1.96, 2.04]
+    length_values = [42, 46, 50, 54, 58]
+    opacity_values = [0.42, 0.48, 0.54, 0.60]
+    drift_values = [-58, -66, -74, -82, -90]
 
     duration_index = 0
     length_index = 0
     opacity_index = 0
     drift_index = 0
 
-    for item in range(135):
+    for item in range(220):
         rain_drops.append(
             (
                 round(left_value, 2),
+                round(top_value, 2),
                 round(delay_value, 2),
                 duration_values[duration_index],
                 length_values[length_index],
@@ -788,13 +790,17 @@ def apply_dark_mode_weather_effect():
             )
         )
 
-        left_value = left_value + 6.9
+        left_value = left_value + 4.3
         if left_value > 100:
             left_value = left_value - 100
 
-        delay_value = delay_value - 0.11
-        if delay_value < -6.8:
-            delay_value = delay_value + 6.8
+        top_value = top_value + 7.2
+        if top_value > 110:
+            top_value = top_value - 120
+
+        delay_value = delay_value - 0.09
+        if delay_value < -5.5:
+            delay_value = delay_value + 5.5
 
         duration_index = duration_index + 1
         if duration_index >= len(duration_values):
@@ -814,11 +820,12 @@ def apply_dark_mode_weather_effect():
 
     drops_html = ""
 
-    for left, delay, duration, length, opacity, drift in rain_drops:
+    for left, top, delay, duration, length, opacity, drift in rain_drops:
         drops_html += (
             f'<span class="storm-rain-drop" '
-            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
-            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
+            f'style="--left:{left}vw; --top:{top}vh; --delay:{delay}s; '
+            f'--duration:{duration}s; --length:{length}px; '
+            f'--opacity:{opacity}; --drift:{drift}px;"></span>'
         )
 
     st.markdown(
@@ -837,27 +844,27 @@ def apply_dark_mode_weather_effect():
 
         .storm-rain-drop {{
             position: absolute;
-            top: -90px;
+            top: var(--top);
             left: var(--left);
-            width: 0.75px;
+            width: 1.15px;
             height: var(--length);
             opacity: 0;
             border-radius: 999px;
             background: linear-gradient(
                 to bottom,
-                rgba(220,230,245,0.00),
-                rgba(220,230,245,0.58),
-                rgba(220,230,245,0.00)
+                rgba(235,242,255,0.00),
+                rgba(235,242,255,0.82),
+                rgba(235,242,255,0.00)
             );
-            filter: blur(0.04px);
+            filter: blur(0.05px);
             transform: rotate(-8deg);
-            animation: fineScreenRain var(--duration) linear infinite;
+            animation: fullScreenFineRain var(--duration) linear infinite;
             animation-delay: var(--delay);
         }}
 
-        @keyframes fineScreenRain {{
+        @keyframes fullScreenFineRain {{
             0% {{
-                transform: translate3d(0, -24vh, 0) rotate(-8deg);
+                transform: translate3d(0, -30vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
 
@@ -865,12 +872,12 @@ def apply_dark_mode_weather_effect():
                 opacity: var(--opacity);
             }}
 
-            84% {{
+            86% {{
                 opacity: var(--opacity);
             }}
 
             100% {{
-                transform: translate3d(var(--drift), 130vh, 0) rotate(-8deg);
+                transform: translate3d(var(--drift), 135vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
         }}
@@ -933,7 +940,13 @@ def apply_dark_mode_weather_effect():
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {{
+        .st-key-dark_bright_toggle_btn button,
+        .st-key-theme_dark_btn,
+        .st-key-theme_bright_btn,
+        .st-key-theme_rain_btn,
+        .st-key-theme_dark_btn button,
+        .st-key-theme_bright_btn button,
+        .st-key-theme_rain_btn button {{
             z-index: 2147483647 !important;
         }}
 
