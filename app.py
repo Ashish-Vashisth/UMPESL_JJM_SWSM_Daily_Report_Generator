@@ -480,29 +480,45 @@ def apply_dark_mode_weather_effect():
         return
 
     rain_drops = [
-        (4, -0.2, 5.2, 58, 0.24, -80),
-        (9, -1.7, 4.8, 72, 0.30, -90),
-        (15, -3.1, 5.8, 46, 0.20, -75),
-        (21, -0.9, 4.6, 64, 0.28, -85),
-        (28, -2.4, 5.4, 82, 0.36, -95),
-        (34, -4.0, 6.1, 42, 0.18, -70),
-        (41, -1.2, 4.9, 76, 0.32, -88),
-        (48, -3.5, 5.6, 52, 0.22, -78),
-        (55, -0.6, 4.7, 88, 0.38, -96),
-        (62, -2.9, 6.0, 48, 0.20, -72),
-        (69, -1.5, 5.1, 70, 0.30, -86),
-        (76, -3.8, 4.8, 58, 0.24, -82),
-        (83, -0.4, 5.7, 84, 0.36, -94),
-        (90, -2.2, 6.2, 50, 0.20, -76),
-        (96, -4.6, 5.3, 66, 0.28, -84),
-        (18, -5.0, 6.4, 38, 0.16, -64),
-        (36, -5.5, 5.9, 44, 0.18, -68),
-        (58, -4.9, 6.5, 40, 0.17, -66),
-        (72, -5.7, 5.6, 54, 0.22, -80),
+        (3, -0.2, 5.2, 58, 0.38, -80),
+        (7, -1.1, 4.9, 66, 0.40, -88),
+        (11, -1.7, 4.8, 72, 0.44, -90),
+        (15, -3.1, 5.8, 46, 0.34, -75),
+        (19, -2.2, 5.0, 62, 0.39, -82),
+        (23, -0.9, 4.6, 64, 0.42, -85),
+        (28, -2.4, 5.4, 82, 0.48, -95),
+        (32, -3.6, 5.1, 54, 0.36, -78),
+        (36, -4.0, 6.1, 42, 0.32, -70),
+        (41, -1.2, 4.9, 76, 0.46, -88),
+        (45, -2.8, 5.3, 60, 0.38, -82),
+        (49, -3.5, 5.6, 52, 0.36, -78),
+        (53, -0.6, 4.7, 88, 0.50, -96),
+        (57, -1.9, 5.2, 68, 0.42, -86),
+        (62, -2.9, 6.0, 48, 0.34, -72),
+        (66, -4.3, 5.5, 56, 0.36, -80),
+        (70, -1.5, 5.1, 70, 0.44, -86),
+        (74, -3.8, 4.8, 58, 0.38, -82),
+        (78, -2.6, 5.7, 74, 0.42, -90),
+        (83, -0.4, 5.7, 84, 0.50, -94),
+        (87, -1.8, 5.0, 64, 0.40, -84),
+        (91, -2.2, 6.2, 50, 0.34, -76),
+        (95, -4.6, 5.3, 66, 0.42, -84),
+        (98, -3.2, 5.8, 52, 0.36, -78),
+
+        (6, -5.0, 6.4, 38, 0.30, -64),
+        (13, -4.4, 5.9, 44, 0.32, -68),
+        (21, -5.8, 6.7, 46, 0.31, -72),
+        (30, -5.5, 5.9, 44, 0.34, -68),
+        (39, -6.2, 6.5, 50, 0.35, -74),
+        (47, -4.9, 6.5, 40, 0.31, -66),
+        (58, -6.0, 6.8, 48, 0.34, -72),
+        (68, -5.7, 5.6, 54, 0.38, -80),
+        (80, -6.4, 6.3, 46, 0.33, -70),
+        (93, -5.2, 6.1, 42, 0.32, -68),
     ]
 
     drops_html = ""
-    for i, (left, delay, duration, length, opacity, drift) in enumerate(rain_drops):
+    for left, delay, duration, length, opacity, drift in rain_drops:
         drops_html += (
             f'<span class="storm-rain-drop" '
             f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
@@ -514,6 +530,7 @@ def apply_dark_mode_weather_effect():
         <style>
         /* =====================================================
            NATURAL SPARSE DRIZZLE RAIN
+           More drops + brighter drops
            ===================================================== */
 
         .storm-rain-layer {{
@@ -526,19 +543,19 @@ def apply_dark_mode_weather_effect():
 
         .storm-rain-drop {{
             position: absolute;
-            top: -120px;
+            top: -130px;
             left: var(--left);
-            width: 1.4px;
+            width: 1.35px;
             height: var(--length);
             opacity: 0;
             border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
-                rgba(220,230,245,0.55),
+                rgba(220,230,245,0.78),
                 rgba(220,230,245,0.00)
             );
-            filter: blur(0.15px);
+            filter: blur(0.10px);
             transform: rotate(-8deg);
             animation: naturalSparseRain var(--duration) linear infinite;
             animation-delay: var(--delay);
@@ -566,6 +583,7 @@ def apply_dark_mode_weather_effect():
 
         /* =====================================================
            BRIGHT THUNDERSTORM FLASH
+           Kept unchanged as requested
            ===================================================== */
 
         .storm-lightning-flash {{
@@ -622,7 +640,7 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
-        /* Keep app card above rain, so rain does not look like mirror/glass over table */
+        /* Keep app card above rain */
         [data-testid="stAppViewContainer"] .block-container {{
             position: relative !important;
             z-index: 10 !important;
