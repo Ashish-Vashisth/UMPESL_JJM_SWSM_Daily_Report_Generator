@@ -754,7 +754,7 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds visible full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds full-screen fine drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
     """
 
@@ -764,20 +764,20 @@ def apply_dark_mode_weather_effect():
     rain_drops = []
 
     left_value = 1.0
-    top_value = -10.0
+    top_value = -20.0
     delay_value = 0.0
 
-    duration_values = [1.65, 1.72, 1.80, 1.88, 1.96, 2.04]
-    length_values = [42, 46, 50, 54, 58]
-    opacity_values = [0.42, 0.48, 0.54, 0.60]
-    drift_values = [-58, -66, -74, -82, -90]
+    duration_values = [1.80, 1.88, 1.96, 2.04, 2.12, 2.20]
+    length_values = [34, 38, 42, 46, 50]
+    opacity_values = [0.32, 0.36, 0.40, 0.44]
+    drift_values = [-48, -56, -64, -72]
 
     duration_index = 0
     length_index = 0
     opacity_index = 0
     drift_index = 0
 
-    for item in range(220):
+    for item in range(180):
         rain_drops.append(
             (
                 round(left_value, 2),
@@ -790,17 +790,17 @@ def apply_dark_mode_weather_effect():
             )
         )
 
-        left_value = left_value + 4.3
+        left_value = left_value + 5.7
         if left_value > 100:
             left_value = left_value - 100
 
-        top_value = top_value + 7.2
+        top_value = top_value + 6.4
         if top_value > 110:
-            top_value = top_value - 120
+            top_value = top_value - 135
 
-        delay_value = delay_value - 0.09
-        if delay_value < -5.5:
-            delay_value = delay_value + 5.5
+        delay_value = delay_value - 0.07
+        if delay_value < -5.0:
+            delay_value = delay_value + 5.0
 
         duration_index = duration_index + 1
         if duration_index >= len(duration_values):
@@ -846,29 +846,29 @@ def apply_dark_mode_weather_effect():
             position: absolute;
             top: var(--top);
             left: var(--left);
-            width: 1.15px;
+            width: 0.90px;
             height: var(--length);
             opacity: 0;
             border-radius: 999px;
             background: linear-gradient(
                 to bottom,
                 rgba(235,242,255,0.00),
-                rgba(235,242,255,0.82),
+                rgba(235,242,255,0.70),
                 rgba(235,242,255,0.00)
             );
-            filter: blur(0.05px);
+            filter: blur(0.04px);
             transform: rotate(-8deg);
-            animation: fullScreenFineRain var(--duration) linear infinite;
+            animation: fineFullScreenRain var(--duration) linear infinite;
             animation-delay: var(--delay);
         }}
 
-        @keyframes fullScreenFineRain {{
+        @keyframes fineFullScreenRain {{
             0% {{
-                transform: translate3d(0, -30vh, 0) rotate(-8deg);
+                transform: translate3d(0, -22vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
 
-            8% {{
+            10% {{
                 opacity: var(--opacity);
             }}
 
@@ -877,7 +877,7 @@ def apply_dark_mode_weather_effect():
             }}
 
             100% {{
-                transform: translate3d(var(--drift), 135vh, 0) rotate(-8deg);
+                transform: translate3d(var(--drift), 128vh, 0) rotate(-8deg);
                 opacity: 0;
             }}
         }}
@@ -940,13 +940,7 @@ def apply_dark_mode_weather_effect():
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button,
-        .st-key-theme_dark_btn,
-        .st-key-theme_bright_btn,
-        .st-key-theme_rain_btn,
-        .st-key-theme_dark_btn button,
-        .st-key-theme_bright_btn button,
-        .st-key-theme_rain_btn button {{
+        .st-key-dark_bright_toggle_btn button {{
             z-index: 2147483647 !important;
         }}
 
