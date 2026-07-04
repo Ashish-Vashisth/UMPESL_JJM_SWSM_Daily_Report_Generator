@@ -754,181 +754,184 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds natural drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds full-screen natural drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Droplet size is kept same, rain count is increased, and rain covers full viewport.
+    Droplet size is kept similar, count is increased, and rain covers the full viewport.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
-    rain_drops = [
-        (2, -0.2, 2.6, 58, 0.38, -80),
-        (4, -1.1, 2.4, 66, 0.40, -88),
-        (6, -1.7, 2.5, 72, 0.44, -90),
-        (8, -0.8, 2.7, 54, 0.36, -78),
-        (10, -2.4, 2.6, 64, 0.42, -84),
-        (12, -3.1, 2.9, 46, 0.34, -75),
-        (14, -1.5, 2.5, 60, 0.38, -82),
-        (16, -2.2, 2.6, 62, 0.39, -82),
-        (18, -0.9, 2.3, 64, 0.42, -85),
-        (20, -2.8, 2.7, 70, 0.44, -90),
-        (22, -3.6, 2.5, 54, 0.36, -78),
-        (24, -2.4, 2.7, 82, 0.48, -95),
-        (26, -4.0, 3.0, 42, 0.32, -70),
-        (28, -1.2, 2.4, 76, 0.46, -88),
-        (30, -2.8, 2.6, 60, 0.38, -82),
-        (32, -3.5, 2.8, 52, 0.36, -78),
-        (34, -0.6, 2.3, 88, 0.50, -96),
-        (36, -1.9, 2.6, 68, 0.42, -86),
-        (38, -2.9, 3.0, 48, 0.34, -72),
-        (40, -4.3, 2.7, 56, 0.36, -80),
-        (42, -1.5, 2.5, 70, 0.44, -86),
-        (44, -3.8, 2.4, 58, 0.38, -82),
-        (46, -2.6, 2.8, 74, 0.42, -90),
-        (48, -0.4, 2.8, 84, 0.50, -94),
-        (50, -1.8, 2.5, 64, 0.40, -84),
-        (52, -2.2, 3.1, 50, 0.34, -76),
-        (54, -4.6, 2.6, 66, 0.42, -84),
-        (56, -3.2, 2.9, 52, 0.36, -78),
-        (58, -0.7, 2.5, 76, 0.44, -88),
-        (60, -1.4, 2.4, 62, 0.39, -82),
-        (62, -2.6, 2.8, 70, 0.42, -90),
-        (64, -3.7, 2.6, 58, 0.38, -82),
-        (66, -1.0, 2.5, 82, 0.48, -94),
-        (68, -2.1, 2.7, 54, 0.36, -78),
-        (70, -3.3, 2.8, 66, 0.42, -86),
-        (72, -0.5, 2.5, 74, 0.44, -90),
-        (74, -1.9, 2.6, 60, 0.38, -82),
-        (76, -2.7, 2.9, 52, 0.36, -76),
-        (78, -3.5, 2.5, 68, 0.42, -86),
-        (80, -0.9, 2.4, 84, 0.50, -94),
-        (82, -1.6, 2.6, 64, 0.40, -84),
-        (84, -2.8, 3.0, 48, 0.34, -72),
-        (86, -4.2, 2.7, 56, 0.36, -80),
-        (88, -1.3, 2.5, 70, 0.44, -86),
-        (90, -2.4, 2.8, 58, 0.38, -82),
-        (92, -3.9, 2.6, 66, 0.42, -84),
-        (94, -0.3, 2.5, 78, 0.46, -90),
-        (96, -1.8, 2.7, 60, 0.38, -82),
-        (98, -2.9, 2.9, 52, 0.36, -78),
-
-        (1, -3.4, 2.5, 56, 0.36, -82),
-        (3, -4.3, 2.5, 42, 0.30, -70),
-        (5, -4.8, 3.1, 38, 0.30, -64),
-        (7, -4.8, 2.6, 38, 0.28, -66),
-        (9, -5.2, 3.0, 44, 0.32, -68),
-        (11, -5.1, 2.4, 46, 0.32, -72),
-        (13, -4.4, 2.9, 44, 0.32, -68),
-        (15, -4.5, 2.3, 44, 0.31, -70),
-        (17, -5.8, 3.2, 46, 0.31, -72),
-        (19, -5.7, 2.7, 48, 0.32, -74),
-        (21, -6.2, 3.1, 50, 0.35, -74),
-        (23, -6.0, 2.6, 42, 0.30, -68),
-        (25, -5.5, 2.9, 44, 0.34, -68),
-        (27, -5.3, 2.4, 46, 0.32, -72),
-        (29, -4.9, 3.2, 40, 0.31, -66),
-        (31, -4.9, 2.5, 40, 0.30, -66),
-        (33, -6.0, 3.3, 48, 0.34, -72),
-        (35, -6.1, 2.7, 48, 0.34, -74),
-        (37, -5.7, 2.8, 54, 0.38, -80),
-        (39, -5.6, 2.3, 52, 0.35, -78),
-        (41, -4.1, 2.6, 62, 0.38, -86),
-        (43, -6.4, 3.1, 46, 0.33, -70),
-        (45, -3.7, 2.5, 64, 0.40, -88),
-        (47, -5.0, 2.4, 48, 0.32, -74),
-        (49, -3.2, 2.7, 58, 0.38, -82),
-        (51, -5.2, 3.0, 42, 0.32, -68),
-        (53, -2.6, 2.4, 70, 0.44, -90),
-        (55, -6.2, 2.7, 46, 0.32, -72),
-        (57, -1.9, 2.6, 66, 0.42, -88),
-        (59, -4.7, 2.3, 48, 0.34, -74),
-        (61, -3.1, 2.8, 60, 0.38, -82),
-        (63, -5.9, 2.6, 44, 0.31, -70),
-        (65, -2.7, 2.5, 72, 0.44, -92),
-        (67, -6.1, 3.2, 52, 0.35, -76),
-        (69, -3.0, 2.6, 64, 0.40, -86),
-        (71, -5.2, 2.4, 46, 0.32, -72),
-        (73, -2.1, 2.5, 76, 0.46, -92),
-        (75, -5.4, 2.8, 44, 0.32, -70),
-        (77, -3.8, 2.7, 60, 0.38, -82),
-        (79, -6.5, 2.7, 48, 0.33, -74),
-        (81, -2.4, 2.6, 68, 0.42, -88),
-        (83, -6.5, 3.1, 50, 0.34, -74),
-        (85, -3.3, 2.5, 62, 0.38, -86),
-        (87, -6.0, 2.6, 50, 0.34, -76),
-        (89, -2.8, 2.7, 70, 0.44, -90),
-        (91, -5.9, 3.0, 46, 0.33, -70),
-        (93, -2.2, 2.5, 66, 0.42, -86),
-        (95, -6.3, 2.7, 42, 0.30, -68),
-        (97, -3.4, 2.6, 58, 0.38, -82),
-        (99, -4.6, 2.3, 48, 0.34, -74)
-    ]
-
-    drops_html = ""
-
-    for left, delay, duration, length, opacity, drift in rain_drops:
-        drops_html += (
-            f'<span class="storm-rain-drop" '
-            f'style="--left:{left}vw; --delay:{delay}s; --duration:{duration}s; '
-            f'--length:{length}px; --opacity:{opacity}; --drift:{drift}px;"></span>'
-        )
-
     st.markdown(
-        f"""
+        """
         <style>
-        .storm-rain-layer {{
+        body::before {
+            content: "";
             position: fixed !important;
-            top: 0 !important;
+            top: -120px !important;
             left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 1.35px !important;
+            height: 58px !important;
             pointer-events: none !important;
-            overflow: hidden !important;
             z-index: 2147483000 !important;
-        }}
-
-        .storm-rain-drop {{
-            position: absolute;
-            top: -130px;
-            left: var(--left);
-            width: 1.35px;
-            height: var(--length);
-            opacity: 0;
-            border-radius: 999px;
+            opacity: 1 !important;
+            border-radius: 999px !important;
             background: linear-gradient(
                 to bottom,
                 rgba(220,230,245,0.00),
                 rgba(220,230,245,0.78),
                 rgba(220,230,245,0.00)
-            );
+            ) !important;
             filter: blur(0.10px);
             transform: rotate(-8deg);
-            animation: naturalFastRain var(--duration) linear infinite;
-            animation-delay: var(--delay);
-        }}
 
-        @keyframes naturalFastRain {{
-            0% {{
-                transform: translate3d(0, -20vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
+            box-shadow:
+                2vw 2vh 0 rgba(220,230,245,0.38),
+                6vw 12vh 0 rgba(220,230,245,0.40),
+                10vw 22vh 0 rgba(220,230,245,0.36),
+                14vw 32vh 0 rgba(220,230,245,0.42),
+                18vw 42vh 0 rgba(220,230,245,0.38),
+                22vw 52vh 0 rgba(220,230,245,0.44),
+                26vw 62vh 0 rgba(220,230,245,0.36),
+                30vw 72vh 0 rgba(220,230,245,0.42),
+                34vw 82vh 0 rgba(220,230,245,0.38),
+                38vw 92vh 0 rgba(220,230,245,0.40),
 
-            7% {{
-                opacity: var(--opacity);
-            }}
+                42vw 4vh 0 rgba(220,230,245,0.38),
+                46vw 14vh 0 rgba(220,230,245,0.42),
+                50vw 24vh 0 rgba(220,230,245,0.36),
+                54vw 34vh 0 rgba(220,230,245,0.44),
+                58vw 44vh 0 rgba(220,230,245,0.38),
+                62vw 54vh 0 rgba(220,230,245,0.42),
+                66vw 64vh 0 rgba(220,230,245,0.36),
+                70vw 74vh 0 rgba(220,230,245,0.44),
+                74vw 84vh 0 rgba(220,230,245,0.38),
+                78vw 94vh 0 rgba(220,230,245,0.42),
 
-            82% {{
-                opacity: var(--opacity);
-            }}
+                82vw 8vh 0 rgba(220,230,245,0.38),
+                86vw 18vh 0 rgba(220,230,245,0.42),
+                90vw 28vh 0 rgba(220,230,245,0.36),
+                94vw 38vh 0 rgba(220,230,245,0.44),
+                98vw 48vh 0 rgba(220,230,245,0.38),
 
-            100% {{
-                transform: translate3d(var(--drift), 125vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
-        }}
+                4vw 58vh 0 rgba(220,230,245,0.42),
+                8vw 68vh 0 rgba(220,230,245,0.36),
+                12vw 78vh 0 rgba(220,230,245,0.44),
+                16vw 88vh 0 rgba(220,230,245,0.38),
+                20vw 98vh 0 rgba(220,230,245,0.42),
 
-        .storm-lightning-flash {{
+                24vw 6vh 0 rgba(220,230,245,0.38),
+                28vw 16vh 0 rgba(220,230,245,0.42),
+                32vw 26vh 0 rgba(220,230,245,0.36),
+                36vw 36vh 0 rgba(220,230,245,0.44),
+                40vw 46vh 0 rgba(220,230,245,0.38),
+                44vw 56vh 0 rgba(220,230,245,0.42),
+                48vw 66vh 0 rgba(220,230,245,0.36),
+                52vw 76vh 0 rgba(220,230,245,0.44),
+                56vw 86vh 0 rgba(220,230,245,0.38),
+                60vw 96vh 0 rgba(220,230,245,0.42),
+
+                64vw 10vh 0 rgba(220,230,245,0.38),
+                68vw 20vh 0 rgba(220,230,245,0.42),
+                72vw 30vh 0 rgba(220,230,245,0.36),
+                76vw 40vh 0 rgba(220,230,245,0.44),
+                80vw 50vh 0 rgba(220,230,245,0.38),
+                84vw 60vh 0 rgba(220,230,245,0.42),
+                88vw 70vh 0 rgba(220,230,245,0.36),
+                92vw 80vh 0 rgba(220,230,245,0.44),
+                96vw 90vh 0 rgba(220,230,245,0.38);
+
+            animation: rainFullScreenOne 1.65s linear infinite;
+        }
+
+        @keyframes rainFullScreenOne {
+            0% {
+                transform: translate3d(0, -28vh, 0) rotate(-8deg);
+            }
+
+            100% {
+                transform: translate3d(-92px, 135vh, 0) rotate(-8deg);
+            }
+        }
+
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: fixed !important;
+            top: -140px !important;
+            left: 0 !important;
+            width: 1.35px !important;
+            height: 52px !important;
+            pointer-events: none !important;
+            z-index: 2147483000 !important;
+            opacity: 1 !important;
+            border-radius: 999px !important;
+            background: linear-gradient(
+                to bottom,
+                rgba(220,230,245,0.00),
+                rgba(220,230,245,0.68),
+                rgba(220,230,245,0.00)
+            ) !important;
+            filter: blur(0.10px);
+            transform: rotate(-8deg);
+
+            box-shadow:
+                1vw 15vh 0 rgba(220,230,245,0.36),
+                5vw 25vh 0 rgba(220,230,245,0.40),
+                9vw 35vh 0 rgba(220,230,245,0.34),
+                13vw 45vh 0 rgba(220,230,245,0.42),
+                17vw 55vh 0 rgba(220,230,245,0.36),
+                21vw 65vh 0 rgba(220,230,245,0.40),
+                25vw 75vh 0 rgba(220,230,245,0.34),
+                29vw 85vh 0 rgba(220,230,245,0.42),
+                33vw 95vh 0 rgba(220,230,245,0.36),
+
+                37vw 12vh 0 rgba(220,230,245,0.40),
+                41vw 22vh 0 rgba(220,230,245,0.34),
+                45vw 32vh 0 rgba(220,230,245,0.42),
+                49vw 42vh 0 rgba(220,230,245,0.36),
+                53vw 52vh 0 rgba(220,230,245,0.40),
+                57vw 62vh 0 rgba(220,230,245,0.34),
+                61vw 72vh 0 rgba(220,230,245,0.42),
+                65vw 82vh 0 rgba(220,230,245,0.36),
+                69vw 92vh 0 rgba(220,230,245,0.40),
+
+                73vw 18vh 0 rgba(220,230,245,0.34),
+                77vw 28vh 0 rgba(220,230,245,0.42),
+                81vw 38vh 0 rgba(220,230,245,0.36),
+                85vw 48vh 0 rgba(220,230,245,0.40),
+                89vw 58vh 0 rgba(220,230,245,0.34),
+                93vw 68vh 0 rgba(220,230,245,0.42),
+                97vw 78vh 0 rgba(220,230,245,0.36),
+
+                3vw 88vh 0 rgba(220,230,245,0.40),
+                11vw 6vh 0 rgba(220,230,245,0.34),
+                19vw 16vh 0 rgba(220,230,245,0.42),
+                27vw 26vh 0 rgba(220,230,245,0.36),
+                35vw 36vh 0 rgba(220,230,245,0.40),
+                43vw 46vh 0 rgba(220,230,245,0.34),
+                51vw 56vh 0 rgba(220,230,245,0.42),
+                59vw 66vh 0 rgba(220,230,245,0.36),
+                67vw 76vh 0 rgba(220,230,245,0.40),
+                75vw 86vh 0 rgba(220,230,245,0.34),
+                83vw 96vh 0 rgba(220,230,245,0.42),
+                91vw 9vh 0 rgba(220,230,245,0.36),
+                99vw 19vh 0 rgba(220,230,245,0.40);
+
+            animation: rainFullScreenTwo 1.85s linear infinite;
+        }
+
+        @keyframes rainFullScreenTwo {
+            0% {
+                transform: translate3d(0, -32vh, 0) rotate(-8deg);
+            }
+
+            100% {
+                transform: translate3d(-86px, 138vh, 0) rotate(-8deg);
+            }
+        }
+
+        [data-testid="stAppViewContainer"]::after {
+            content: "";
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
@@ -952,55 +955,50 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.00)
                 );
             animation: brightStormFlash 6.2s infinite;
-        }}
+        }
 
-        @keyframes brightStormFlash {{
-            0%, 62%, 100% {{
+        @keyframes brightStormFlash {
+            0%, 62%, 100% {
                 opacity: 0;
-            }}
+            }
 
-            63% {{
+            63% {
                 opacity: 1;
-            }}
+            }
 
-            64% {{
+            64% {
                 opacity: 0.18;
-            }}
+            }
 
-            65% {{
+            65% {
                 opacity: 0.95;
-            }}
+            }
 
-            66% {{
+            66% {
                 opacity: 0.12;
-            }}
+            }
 
-            67% {{
+            67% {
                 opacity: 0.78;
-            }}
+            }
 
-            68%, 100% {{
+            68%, 100% {
                 opacity: 0;
-            }}
-        }}
+            }
+        }
+
+        body::before,
+        [data-testid="stAppViewContainer"]::before,
+        [data-testid="stAppViewContainer"]::after {
+            pointer-events: none !important;
+        }
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {{
+        .st-key-dark_bright_toggle_btn button {
             z-index: 2147483647 !important;
-        }}
-
-        .storm-rain-layer,
-        .storm-rain-drop,
-        .storm-lightning-flash {{
-            pointer-events: none !important;
-        }}
+        }
         </style>
-
-        <div class="storm-rain-layer">
-            {drops_html}
-        </div>
-        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
