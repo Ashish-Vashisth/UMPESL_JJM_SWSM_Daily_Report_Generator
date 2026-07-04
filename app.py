@@ -754,9 +754,9 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds natural drizzle rain + bright thunderstorm flash only in Dark mode.
+    Adds natural drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
-    Rain droplets are increased and speed is faster.
+    Droplet size is kept same, rain count is increased, and rain covers full viewport.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
@@ -813,64 +813,60 @@ def apply_dark_mode_weather_effect():
         (96, -1.8, 2.7, 60, 0.38, -82),
         (98, -2.9, 2.9, 52, 0.36, -78),
 
+        (1, -3.4, 2.5, 56, 0.36, -82),
+        (3, -4.3, 2.5, 42, 0.30, -70),
         (5, -4.8, 3.1, 38, 0.30, -64),
+        (7, -4.8, 2.6, 38, 0.28, -66),
         (9, -5.2, 3.0, 44, 0.32, -68),
+        (11, -5.1, 2.4, 46, 0.32, -72),
         (13, -4.4, 2.9, 44, 0.32, -68),
+        (15, -4.5, 2.3, 44, 0.31, -70),
         (17, -5.8, 3.2, 46, 0.31, -72),
+        (19, -5.7, 2.7, 48, 0.32, -74),
         (21, -6.2, 3.1, 50, 0.35, -74),
+        (23, -6.0, 2.6, 42, 0.30, -68),
         (25, -5.5, 2.9, 44, 0.34, -68),
+        (27, -5.3, 2.4, 46, 0.32, -72),
         (29, -4.9, 3.2, 40, 0.31, -66),
+        (31, -4.9, 2.5, 40, 0.30, -66),
         (33, -6.0, 3.3, 48, 0.34, -72),
+        (35, -6.1, 2.7, 48, 0.34, -74),
         (37, -5.7, 2.8, 54, 0.38, -80),
+        (39, -5.6, 2.3, 52, 0.35, -78),
+        (41, -4.1, 2.6, 62, 0.38, -86),
         (43, -6.4, 3.1, 46, 0.33, -70),
+        (45, -3.7, 2.5, 64, 0.40, -88),
+        (47, -5.0, 2.4, 48, 0.32, -74),
+        (49, -3.2, 2.7, 58, 0.38, -82),
         (51, -5.2, 3.0, 42, 0.32, -68),
-        (59, -4.7, 2.9, 48, 0.34, -72),
+        (53, -2.6, 2.4, 70, 0.44, -90),
+        (55, -6.2, 2.7, 46, 0.32, -72),
+        (57, -1.9, 2.6, 66, 0.42, -88),
+        (59, -4.7, 2.3, 48, 0.34, -74),
+        (61, -3.1, 2.8, 60, 0.38, -82),
+        (63, -5.9, 2.6, 44, 0.31, -70),
+        (65, -2.7, 2.5, 72, 0.44, -92),
         (67, -6.1, 3.2, 52, 0.35, -76),
+        (69, -3.0, 2.6, 64, 0.40, -86),
+        (71, -5.2, 2.4, 46, 0.32, -72),
+        (73, -2.1, 2.5, 76, 0.46, -92),
         (75, -5.4, 2.8, 44, 0.32, -70),
+        (77, -3.8, 2.7, 60, 0.38, -82),
+        (79, -6.5, 2.7, 48, 0.33, -74),
+        (81, -2.4, 2.6, 68, 0.42, -88),
         (83, -6.5, 3.1, 50, 0.34, -74),
+        (85, -3.3, 2.5, 62, 0.38, -86),
+        (87, -6.0, 2.6, 50, 0.34, -76),
+        (89, -2.8, 2.7, 70, 0.44, -90),
         (91, -5.9, 3.0, 46, 0.33, -70),
-        (2, -0.2, 2.6, 58, 0.38, -80),
-        (4, -1.1, 2.4, 66, 0.40, -88),
-        (6, -1.7, 2.5, 72, 0.44, -90),
-        (8, -0.8, 2.7, 54, 0.36, -78),
-        (10, -2.4, 2.6, 64, 0.42, -84),
-        (12, -3.1, 2.9, 46, 0.34, -75),
-        (14, -1.5, 2.5, 60, 0.38, -82),
-        (16, -2.2, 2.6, 62, 0.39, -82),
-        (18, -0.9, 2.3, 64, 0.42, -85),
-        (20, -2.8, 2.7, 70, 0.44, -90),
-        (22, -3.6, 2.5, 54, 0.36, -78),
-        (24, -2.4, 2.7, 82, 0.48, -95),
-        (26, -4.0, 3.0, 42, 0.32, -70),
-        (28, -1.2, 2.4, 76, 0.46, -88),
-        (30, -2.8, 2.6, 60, 0.38, -82),
-        (32, -3.5, 2.8, 52, 0.36, -78),
-        (34, -0.6, 2.3, 88, 0.50, -96),
-        (36, -1.9, 2.6, 68, 0.42, -86),
-        (38, -2.9, 3.0, 48, 0.34, -72),
-        (40, -4.3, 2.7, 56, 0.36, -80),
-        (42, -1.5, 2.5, 70, 0.44, -86),
-        (44, -3.8, 2.4, 58, 0.38, -82),
-        (46, -2.6, 2.8, 74, 0.42, -90),
-        (48, -0.4, 2.8, 84, 0.50, -94),
-        (50, -1.8, 2.5, 64, 0.40, -84),
-        (52, -2.2, 3.1, 50, 0.34, -76),
-        (54, -4.6, 2.6, 66, 0.42, -84),
-        (56, -3.2, 2.9, 52, 0.36, -78),
-        (58, -0.7, 2.5, 76, 0.44, -88),
-        (60, -1.4, 2.4, 62, 0.39, -82),
-        (62, -2.6, 2.8, 70, 0.42, -90),
-        (64, -3.7, 2.6, 58, 0.38, -82),
-        (66, -1.0, 2.5, 82, 0.48, -94),
-        (68, -2.1, 2.7, 54, 0.36, -78),
-        (70, -3.3, 2.8, 66, 0.42, -86),
-        (72, -0.5, 2.5, 74, 0.44, -90),
-        (74, -1.9, 2.6, 60, 0.38, -82),
-        (76, -2.7, 2.9, 52, 0.36, -76),
-        
+        (93, -2.2, 2.5, 66, 0.42, -86),
+        (95, -6.3, 2.7, 42, 0.30, -68),
+        (97, -3.4, 2.6, 58, 0.38, -82),
+        (99, -4.6, 2.3, 48, 0.34, -74)
     ]
 
     drops_html = ""
+
     for left, delay, duration, length, opacity, drift in rain_drops:
         drops_html += (
             f'<span class="storm-rain-drop" '
@@ -881,17 +877,15 @@ def apply_dark_mode_weather_effect():
     st.markdown(
         f"""
         <style>
-        /* =====================================================
-           NATURAL DRIZZLE RAIN
-           More droplets + faster falling speed
-           ===================================================== */
-
         .storm-rain-layer {{
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 3;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            z-index: 2147483000 !important;
         }}
 
         .storm-rain-drop {{
@@ -934,16 +928,13 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
-        /* =====================================================
-           BRIGHT THUNDERSTORM FLASH
-           Kept unchanged as requested
-           ===================================================== */
-
         .storm-lightning-flash {{
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 4;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 2147483001 !important;
             opacity: 0;
             mix-blend-mode: screen;
             background:
@@ -993,17 +984,16 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
-        /* Keep app card above rain */
-        [data-testid="stAppViewContainer"] .block-container {{
-            position: relative !important;
-            z-index: 10 !important;
-        }}
-
-        /* Keep top controls above everything */
         header,
         .st-key-dark_bright_toggle_btn,
         .st-key-dark_bright_toggle_btn button {{
-            z-index: 10000000 !important;
+            z-index: 2147483647 !important;
+        }}
+
+        .storm-rain-layer,
+        .storm-rain-drop,
+        .storm-lightning-flash {{
+            pointer-events: none !important;
         }}
         </style>
 
