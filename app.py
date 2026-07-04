@@ -754,25 +754,72 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds natural drizzle rain + bright thunderstorm flash only in Dark mode.
-    Bright mode remains clean.
-    Droplet size kept as before, with smoother/even top distribution.
+    Rain mode only.
+    Adds natural drizzle rain and bright thunderstorm flash.
+    Dark and Bright modes remain clean.
     """
 
-    if st.session_state.get("theme_mode", "dark") != "dark":
+    if st.session_state.get("theme_mode", "dark") != "rain":
         return
 
-    rain_drops = []
+    rain_drops = [
+        (2, -0.2, 1.90, 52, 0.34, -78),
+        (5, -0.5, 1.95, 58, 0.36, -82),
+        (8, -0.8, 2.00, 48, 0.32, -76),
+        (11, -1.1, 1.92, 62, 0.38, -86),
+        (14, -1.4, 1.98, 50, 0.34, -80),
+        (17, -1.7, 2.04, 56, 0.36, -84),
+        (20, -2.0, 1.94, 64, 0.40, -90),
+        (23, -2.3, 2.02, 46, 0.32, -74),
+        (26, -2.6, 1.96, 60, 0.38, -86),
+        (29, -2.9, 2.06, 52, 0.34, -80),
+        (32, -3.2, 1.93, 58, 0.36, -84),
+        (35, -3.5, 2.01, 48, 0.32, -76),
+        (38, -3.8, 1.97, 66, 0.40, -92),
+        (41, -4.1, 2.05, 54, 0.35, -82),
+        (44, -4.4, 1.91, 60, 0.38, -86),
+        (47, -4.7, 2.00, 50, 0.34, -80),
+        (50, -5.0, 1.95, 64, 0.40, -90),
+        (53, -5.3, 2.03, 46, 0.32, -74),
+        (56, -5.6, 1.97, 58, 0.36, -84),
+        (59, -5.9, 2.06, 52, 0.34, -80),
+        (62, -6.2, 1.92, 62, 0.38, -88),
+        (65, -6.5, 2.00, 48, 0.32, -76),
+        (68, -6.8, 1.96, 56, 0.36, -84),
+        (71, -7.1, 2.04, 66, 0.40, -92),
+        (74, -7.4, 1.94, 50, 0.34, -80),
+        (77, -7.7, 2.02, 60, 0.38, -86),
+        (80, -8.0, 1.98, 54, 0.35, -82),
+        (83, -8.3, 2.06, 46, 0.32, -74),
+        (86, -8.6, 1.93, 64, 0.40, -90),
+        (89, -8.9, 2.01, 52, 0.34, -80),
+        (92, -9.2, 1.95, 58, 0.36, -84),
+        (95, -9.5, 2.03, 48, 0.32, -76),
+        (98, -9.8, 1.97, 62, 0.38, -88),
 
-    for i in range(95):
-        left = round((i * 10.73) % 100, 2)
-        delay = -round((i * 0.09) % 2.4, 2)
-        duration = round(1.9 + ((i % 6) * 0.08), 2)
-        length = 48 + ((i * 9) % 22)
-        opacity = round(0.30 + ((i % 5) * 0.025), 2)
-        drift = -(70 + ((i * 7) % 28))
-
-        rain_drops.append((left, delay, duration, length, opacity, drift))
+        (3, -10.1, 1.94, 50, 0.34, -80),
+        (7, -10.4, 2.02, 58, 0.36, -84),
+        (12, -10.7, 1.96, 46, 0.32, -74),
+        (16, -11.0, 2.04, 64, 0.40, -90),
+        (21, -11.3, 1.93, 52, 0.34, -80),
+        (25, -11.6, 2.01, 60, 0.38, -86),
+        (30, -11.9, 1.95, 48, 0.32, -76),
+        (34, -12.2, 2.03, 56, 0.36, -84),
+        (39, -12.5, 1.97, 66, 0.40, -92),
+        (43, -12.8, 2.05, 54, 0.35, -82),
+        (48, -13.1, 1.92, 62, 0.38, -88),
+        (52, -13.4, 2.00, 50, 0.34, -80),
+        (57, -13.7, 1.94, 58, 0.36, -84),
+        (61, -14.0, 2.02, 46, 0.32, -74),
+        (66, -14.3, 1.96, 64, 0.40, -90),
+        (70, -14.6, 2.04, 52, 0.34, -80),
+        (75, -14.9, 1.93, 60, 0.38, -86),
+        (79, -15.2, 2.01, 48, 0.32, -76),
+        (84, -15.5, 1.95, 56, 0.36, -84),
+        (88, -15.8, 2.03, 66, 0.40, -92),
+        (93, -16.1, 1.97, 54, 0.35, -82),
+        (97, -16.4, 2.05, 62, 0.38, -88)
+    ]
 
     drops_html = ""
 
@@ -786,40 +833,35 @@ def apply_dark_mode_weather_effect():
     st.markdown(
         f"""
         <style>
-        /* =====================================================
-           NATURAL DRIZZLE RAIN
-           Evenly distributed drops from top
-           Droplet size kept as earlier
-           ===================================================== */
-
         .storm-rain-layer {{
-  *         position: fixed !importan*;
+            position: fixed !important;
             top: 0 !important;
- *          left: 0 !important;
-    *       width: 100vw !important;
-  *         height: 100vh !important;*            pointer-events: none !*mportant;
-            overflow: hi*den !important;
-            z-inde*: 999999 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            z-index: 999999 !important;
         }}
 
- *      .storm-rain-drop {{
-        *   position: absolute;
-           *top: -140px;
-            left: var*--left);
-            width: 1.35px*
-            height: var(--length)*
+        .storm-rain-drop {{
+            position: absolute;
+            top: -140px;
+            left: var(--left);
+            width: 1.35px;
+            height: var(--length);
             opacity: 0;
-         *  border-radius: 999px;
-          * background: linear-gradient(
-    *           to bottom,
-            *   rgba(220,230,245,0.00),
-       *        rgba(220,230,245,0.76),
-  *             rgba(220,230,245,0.00*
+            border-radius: 999px;
+            background: linear-gradient(
+                to bottom,
+                rgba(220,230,245,0.00),
+                rgba(220,230,245,0.76),
+                rgba(220,230,245,0.00)
             );
-            filter* blur(0.09px);
-            transfo*m: rotate(-8deg);
-            anim*tion: naturalEvenRain var(--durati*n) linear infinite;
-            an*mation-delay: var(--delay);
+            filter: blur(0.09px);
+            transform: rotate(-8deg);
+            animation: naturalEvenRain var(--duration) linear infinite;
+            animation-delay: var(--delay);
         }}
 
         @keyframes naturalEvenRain {{
@@ -842,57 +884,52 @@ def apply_dark_mode_weather_effect():
             }}
         }}
 
-        /* =====================================================
-           BRIGHT THUNDERSTORM FLASH
-           Kept unchanged
-           ===================================================== */
-
-        .storm-lightning-*lash {{
-            position: fixe* !important;
-            inset: 0 *important;
-            width: 100v* !important;
-            height: 1*0vh !important;
-            pointe*-events: none !important;
-        *   z-index: 1000000 !important;
-  *         opacity: 0;
-            m*x-blend-mode: screen;
-            *ackground:
-                radial-*radient(
-                    circl* at 68% 7%,
-                    rg*a(255,255,255,1.00),
-             *      rgba(255,255,255,0.72) 12%,
-*                   rgba(255,255,25*,0.30) 26%,
-                    rg*a(255,255,255,0.08) 42%,
-         *          rgba(255,255,255,0.00) 6*%
+        .storm-lightning-flash {{
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 1000000 !important;
+            opacity: 0;
+            mix-blend-mode: screen;
+            background:
+                radial-gradient(
+                    circle at 68% 7%,
+                    rgba(255,255,255,1.00),
+                    rgba(255,255,255,0.72) 12%,
+                    rgba(255,255,255,0.30) 26%,
+                    rgba(255,255,255,0.08) 42%,
+                    rgba(255,255,255,0.00) 62%
                 ),
-             *  linear-gradient(
-               *    rgba(255,255,255,0.42),
-      *             rgba(255,255,255,0.12*,
-                    rgba(255,255*255,0.00)
+                linear-gradient(
+                    rgba(255,255,255,0.42),
+                    rgba(255,255,255,0.12),
+                    rgba(255,255,255,0.00)
                 );
-     *      animation: brightStormFlash *.2s infinite;
+            animation: brightStormFlash 6.2s infinite;
         }}
 
-        *keyframes brightStormFlash {{
-    *       0%, 62%, 100% {{
-          *     opacity: 0;
+        @keyframes brightStormFlash {{
+            0%, 62%, 100% {{
+                opacity: 0;
             }}
 
- *          63% {{
-                o*acity: 1;
+            63% {{
+                opacity: 1;
             }}
 
-        *   64% {{
-                opacity:*0.18;
+            64% {{
+                opacity: 0.18;
             }}
 
-            *5% {{
-                opacity: 0.9*;
+            65% {{
+                opacity: 0.95;
             }}
 
-            66% *{
+            66% {{
                 opacity: 0.12;
- *          }}
+            }}
 
             67% {{
                 opacity: 0.78;
@@ -904,9 +941,13 @@ def apply_dark_mode_weather_effect():
         }}
 
         header,
-        .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button {{
-            z-index: 10000000 !important;
+        .st-key-theme_dark_btn,
+        .st-key-theme_bright_btn,
+        .st-key-theme_rain_btn,
+        .st-key-theme_dark_btn button,
+        .st-key-theme_bright_btn button,
+        .st-key-theme_rain_btn button {{
+            z-index: 2147483647 !important;
         }}
 
         .storm-rain-layer,
