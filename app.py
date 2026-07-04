@@ -754,135 +754,159 @@ def apply_dark_bright_toggle():
 
 def apply_dark_mode_weather_effect():
     """
-    Adds visible full-screen drizzle rain and bright thunderstorm flash only in Dark mode.
+    Adds full-screen fine drizzle rain and bright thunderstorm flash only in Dark mode.
     Bright mode remains clean.
+    Drop length and count slightly increased. Falling speed unchanged.
     """
 
     if st.session_state.get("theme_mode", "dark") != "dark":
         return
 
-    rain_drops = []
-
-    left_value = 1.0
-    top_value = -10.0
-    delay_value = 0.0
-
-    duration_values = [1.65, 1.72, 1.80, 1.88, 1.96, 2.04]
-    length_values = [42, 46, 50, 54, 58]
-    opacity_values = [0.42, 0.48, 0.54, 0.60]
-    drift_values = [-58, -66, -74, -82, -90]
-
-    duration_index = 0
-    length_index = 0
-    opacity_index = 0
-    drift_index = 0
-
-    for item in range(220):
-        rain_drops.append(
-            (
-                round(left_value, 2),
-                round(top_value, 2),
-                round(delay_value, 2),
-                duration_values[duration_index],
-                length_values[length_index],
-                opacity_values[opacity_index],
-                drift_values[drift_index],
-            )
-        )
-
-        left_value = left_value + 4.3
-        if left_value > 100:
-            left_value = left_value - 100
-
-        top_value = top_value + 7.2
-        if top_value > 110:
-            top_value = top_value - 120
-
-        delay_value = delay_value - 0.09
-        if delay_value < -5.5:
-            delay_value = delay_value + 5.5
-
-        duration_index = duration_index + 1
-        if duration_index >= len(duration_values):
-            duration_index = 0
-
-        length_index = length_index + 1
-        if length_index >= len(length_values):
-            length_index = 0
-
-        opacity_index = opacity_index + 1
-        if opacity_index >= len(opacity_values):
-            opacity_index = 0
-
-        drift_index = drift_index + 1
-        if drift_index >= len(drift_values):
-            drift_index = 0
-
-    drops_html = ""
-
-    for left, top, delay, duration, length, opacity, drift in rain_drops:
-        drops_html += (
-            f'<span class="storm-rain-drop" '
-            f'style="--left:{left}vw; --top:{top}vh; --delay:{delay}s; '
-            f'--duration:{duration}s; --length:{length}px; '
-            f'--opacity:{opacity}; --drift:{drift}px;"></span>'
-        )
-
     st.markdown(
-        f"""
+        """
         <style>
-        .storm-rain-layer {{
+        html {
+            overflow-x: hidden !important;
+        }
+
+        body {
+            overflow-x: hidden !important;
+        }
+
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            top: -12vh !important;
+            left: -12vw !important;
+            width: 124vw !important;
+            height: 124vh !important;
             pointer-events: none !important;
-            overflow: hidden !important;
             z-index: 2147483000 !important;
-        }}
-
-        .storm-rain-drop {{
-            position: absolute;
-            top: var(--top);
-            left: var(--left);
-            width: 1.15px;
-            height: var(--length);
-            opacity: 0;
-            border-radius: 999px;
-            background: linear-gradient(
-                to bottom,
-                rgba(235,242,255,0.00),
-                rgba(235,242,255,0.82),
-                rgba(235,242,255,0.00)
-            );
-            filter: blur(0.05px);
+            opacity: 0.92 !important;
             transform: rotate(-8deg);
-            animation: fullScreenFineRain var(--duration) linear infinite;
-            animation-delay: var(--delay);
-        }}
 
-        @keyframes fullScreenFineRain {{
-            0% {{
-                transform: translate3d(0, -30vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
+            background-image:
+                radial-gradient(
+                    ellipse 0.70px 17px at 18% 12%,
+                    rgba(235,242,255,0.54) 0%,
+                    rgba(235,242,255,0.54) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.70px 16px at 56% 38%,
+                    rgba(235,242,255,0.50) 0%,
+                    rgba(235,242,255,0.50) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.65px 15px at 82% 69%,
+                    rgba(235,242,255,0.44) 0%,
+                    rgba(235,242,255,0.44) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.65px 15px at 36% 78%,
+                    rgba(235,242,255,0.42) 0%,
+                    rgba(235,242,255,0.42) 58%,
+                    transparent 72%
+                );
 
-            8% {{
-                opacity: var(--opacity);
-            }}
+            background-size:
+                135px 180px,
+                175px 230px,
+                220px 285px,
+                260px 335px;
 
-            86% {{
-                opacity: var(--opacity);
-            }}
+            background-position:
+                0px -210px,
+                60px -270px,
+                125px -330px,
+                190px -390px;
 
-            100% {{
-                transform: translate3d(var(--drift), 135vh, 0) rotate(-8deg);
-                opacity: 0;
-            }}
-        }}
+            animation: shortDrizzleLayerOne 1.18s linear infinite;
+        }
 
-        .storm-lightning-flash {{
+        @keyframes shortDrizzleLayerOne {
+            0% {
+                background-position:
+                    0px -210px,
+                    60px -270px,
+                    125px -330px,
+                    190px -390px;
+            }
+
+            100% {
+                background-position:
+                    -65px 210px,
+                    -42px 270px,
+                    25px 330px,
+                    90px 390px;
+            }
+        }
+
+        body::before {
+            content: "";
+            position: fixed !important;
+            top: -12vh !important;
+            left: -12vw !important;
+            width: 124vw !important;
+            height: 124vh !important;
+            pointer-events: none !important;
+            z-index: 2147482999 !important;
+            opacity: 0.76 !important;
+            transform: rotate(-8deg);
+
+            background-image:
+                radial-gradient(
+                    ellipse 0.65px 15px at 28% 22%,
+                    rgba(235,242,255,0.44) 0%,
+                    rgba(235,242,255,0.44) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.60px 14px at 74% 58%,
+                    rgba(235,242,255,0.38) 0%,
+                    rgba(235,242,255,0.38) 58%,
+                    transparent 72%
+                ),
+                radial-gradient(
+                    ellipse 0.60px 14px at 48% 86%,
+                    rgba(235,242,255,0.36) 0%,
+                    rgba(235,242,255,0.36) 58%,
+                    transparent 72%
+                );
+
+            background-size:
+                190px 250px,
+                250px 330px,
+                315px 420px;
+
+            background-position:
+                55px -290px,
+                155px -390px,
+                235px -480px;
+
+            animation: shortDrizzleLayerTwo 1.45s linear infinite;
+        }
+
+        @keyframes shortDrizzleLayerTwo {
+            0% {
+                background-position:
+                    55px -290px,
+                    155px -390px,
+                    235px -480px;
+            }
+
+            100% {
+                background-position:
+                    -55px 290px,
+                    40px 390px,
+                    120px 480px;
+            }
+        }
+
+        [data-testid="stAppViewContainer"]::after {
+            content: "";
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
@@ -891,6 +915,7 @@ def apply_dark_mode_weather_effect():
             z-index: 2147483001 !important;
             opacity: 0;
             mix-blend-mode: screen;
+
             background:
                 radial-gradient(
                     circle at 68% 7%,
@@ -905,62 +930,52 @@ def apply_dark_mode_weather_effect():
                     rgba(255,255,255,0.12),
                     rgba(255,255,255,0.00)
                 );
+
             animation: brightStormFlash 6.2s infinite;
-        }}
+        }
 
-        @keyframes brightStormFlash {{
-            0%, 62%, 100% {{
+        @keyframes brightStormFlash {
+            0%, 62%, 100% {
                 opacity: 0;
-            }}
+            }
 
-            63% {{
+            63% {
                 opacity: 1;
-            }}
+            }
 
-            64% {{
+            64% {
                 opacity: 0.18;
-            }}
+            }
 
-            65% {{
+            65% {
                 opacity: 0.95;
-            }}
+            }
 
-            66% {{
+            66% {
                 opacity: 0.12;
-            }}
+            }
 
-            67% {{
+            67% {
                 opacity: 0.78;
-            }}
+            }
 
-            68%, 100% {{
+            68%, 100% {
                 opacity: 0;
-            }}
-        }}
+            }
+        }
+
+        body::before,
+        [data-testid="stAppViewContainer"]::before,
+        [data-testid="stAppViewContainer"]::after {
+            pointer-events: none !important;
+        }
 
         header,
         .st-key-dark_bright_toggle_btn,
-        .st-key-dark_bright_toggle_btn button,
-        .st-key-theme_dark_btn,
-        .st-key-theme_bright_btn,
-        .st-key-theme_rain_btn,
-        .st-key-theme_dark_btn button,
-        .st-key-theme_bright_btn button,
-        .st-key-theme_rain_btn button {{
+        .st-key-dark_bright_toggle_btn button {
             z-index: 2147483647 !important;
-        }}
-
-        .storm-rain-layer,
-        .storm-rain-drop,
-        .storm-lightning-flash {{
-            pointer-events: none !important;
-        }}
+        }
         </style>
-
-        <div class="storm-rain-layer">
-            {drops_html}
-        </div>
-        <div class="storm-lightning-flash"></div>
         """,
         unsafe_allow_html=True
     )
